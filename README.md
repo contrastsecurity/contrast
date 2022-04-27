@@ -13,7 +13,7 @@ Binaries for the Contrast CLI are available for [Windows](https://github.com/con
 You can also use [Homebrew](https://brew.sh/):
 
 ```shell
-brew tap contrastsecurity/contrast
+brew tap contrastsecurity/homebrew-contrast
 brew install contrast
 ```
 
