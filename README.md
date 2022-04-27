@@ -1,27 +1,38 @@
 # Contrast CLI
 
-Install Contrast, authenticate, and then start running a Lambda scan.
-This version supports **Java** and **Python** functions on AWS.
+Scan your AWS Lambda functions and ensure security for policy permissions, dependencies and your code.
 
-## Requirements
+The initial release supports both Java and Python functions.
 
-- AWS credentials should be **available** on your local configure (usually `~/.aws/credentials`)
-- You have an option run lambda scan with your aws-profile to pass `--profile`
-- You also can export differnt credentials
+## Getting Started
+
+### Download
+
+Binaries for the Contrast CLI are available for [Windows](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-windows.zip), [macOS](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-macos.tar.gz) and [Linux](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-linux.tar.gz).
+
+You can also use [Homebrew](https://brew.sh/):
 
 ```shell
-export AWS_DEFAULT_REGION=<YOUR_AWS_REGION>
-export AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID>
-export AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
+brew tap contrastsecurity/contrast
+brew install contrast
 ```
 
-These permissions are required to gather all required information on an AWS Lambda to use the `contrast lambda` command:
+### Prerequisites
 
-- Lambda: [GetFunction](https://docs.aws.amazon.com/lambda/latest/dg/API_GetFunction.html), [GetLayerVersion](https://docs.aws.amazon.com/lambda/latest/dg/API_GetLayerVersion.html)
-- IAM: [GetRolePolicy](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetRolePolicy.html), [GetPolicy](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicy.html), [GetPolicyVersion](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicyVersion.html), [ListRolePolicies](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListRolePolicies.html), [ListAttachedRolePolicies](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListAttachedRolePolicies.html)
+Make sure your AWS credentials are available. The Contrast CLI can find your credentials in one of the following ways:
 
-Policy example:
-```
+ * Configured in your user profile (usually located at `~/.aws/credentials`)
+ * Using the `--profile` argument when running the CLI
+ * Using `AWS_DEFAULT_REGION`, `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables
+
+You will also need the following permissions:
+
+ * Lambda: [GetFunction](https://docs.aws.amazon.com/lambda/latest/dg/API_GetFunction.html), [GetLayerVersion](https://docs.aws.amazon.com/lambda/latest/dg/API_GetLayerVersion.html)
+ * IAM: [GetRolePolicy](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetRolePolicy.html), [GetPolicy](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicy.html), [GetPolicyVersion](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicyVersion.html), [ListRolePolicies](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListRolePolicies.html), [ListAttachedRolePolicies](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListAttachedRolePolicies.html)
+
+#### Example AWS Policy
+
+```json
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -48,62 +59,42 @@ Policy example:
 }
 ```
 
-## Installation via Homebrew
+## Running Your First Scan
 
-- `brew tap Contrast-Security-OSS/homebrew-contrast`
-- `brew install contrast`
+### Authenticate with Contrast
 
-### Install NPM / YARN
+```
+contrast auth
+```
 
-- `npm i -g @contrast/contrast`
-- `yarn global add @contrast/contrast`
+### Scan a Lambda Function
 
-### Install with binaries
+```
+contrast lambda --function-name <YOUR_FUNCTION_NAME> --region <AWS_REGION>
+```
 
-- Go to [https://pkg.contrastsecurity.com/ui/repos/tree/General/cli](https://pkg.contrastsecurity.com/ui/repos/tree/General/cli)
-- Select your operating system and download the package
-- You must allow **execute permissions** on the file depending on your OS
+For more help, use the following command:
 
-| Architecture | Link                                                                                                                                                                           |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| macOS        | [https://pkg.contrastsecurity.com/ui/repos/tree/General/cli/1.0.0/mac/contrast](https://pkg.contrastsecurity.com/ui/repos/tree/General/cli/1.0.0/mac/contrast)                 |
-| Linux        | [https://pkg.contrastsecurity.com/ui/repos/tree/General/cli/1.0.0/linux/contrast](https://pkg.contrastsecurity.com/ui/repos/tree/General/cli/1.0.0/linux/contrast)             |
-| Windows      | [https://pkg.contrastsecurity.com/ui/repos/tree/General/cli/1.0.0/windows/contrast.exe](https://pkg.contrastsecurity.com/ui/repos/tree/General/cli/1.0.0/windows/contrast.exe) |
-
-## Usage
-
-- `contrast [command] [option]`
-- `contrast lambda --function-name <function> [options]`
-
-## Running a scan on a Lambda function
-
-1. `contrast auth`
-   Authenticate by entering contrast auth in the terminal.
-   In the resulting browser window, log in and authenticate with your GitHub or Google credentials.
-2. `contrast lambda --function-name <YOUR_FUNCTION_NAME> --region <AWS_REGION>`
-
-More infromation
-
-- `contrast lambda --help`
+```
+contrast lambda --help
+```
 
 ## Commands
 
-- `auth` - Authenticate Contrast using your `Github` or `Google` account
-- `lambda` - Perform scan on AWS Lambda function
-- `version` - Displays version of Contrast CLI
-- `config` - Displays stored credentials (`–c, --clear` - Removes stored credentials)
-- `help` - Displays usage guide
+ * `auth` - Authenticate Contrast using your `Github` or `Google` account
+ * `lambda` - Perform scan on AWS Lambda function
+ * `version` - Displays version of Contrast CLI
+ * `config` - Displays stored credentials (`–c, --clear` - Removes stored credentials)
+ * `help` - Displays usage guide
 
-## Example of Running
+## Example
 
 ```shell
 contrast lambda --function-name myFunctionName
-contrast lambda -f myFunctionName --region eu-cental-1
-contrast lambda -f myFunctionName --region eu-cental-1 --profile myDevProfile
-contrast lambda -f myFunctionName -v -j -r eu-cental-1 -p myDevProfile
-contrast lambda --function-name myFunctionName --verbose --json-output --region eu-cental-1 --profile myDevProfile
+contrast lambda -f myFunctionName --region eu-central-1
+contrast lambda -f myFunctionName --region eu-central-1 --profile myDevProfile
+contrast lambda -f myFunctionName -v -j -r eu-central-1 -p myDevProfile
+contrast lambda --function-name myFunctionName --verbose --json-output --region eu-central-1 --profile myDevProfile
 ```
-
-## Example of Results
 
 ![image](https://user-images.githubusercontent.com/289035/165555050-e9a709c9-f2a9-4edc-a064-8208445238bc.png)
