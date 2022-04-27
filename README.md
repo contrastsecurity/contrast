@@ -2,7 +2,7 @@
 
 Scan your AWS Lambda functions and ensure security for policy permissions, dependencies and your code.
 
-The initial release supports both Java and Python functions.
+This initial release supports both Java and Python functions.
 
 ## Getting Started
 
