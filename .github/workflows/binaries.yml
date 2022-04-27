@@ -23,14 +23,16 @@ jobs:
       - name: Prepare Artifacts
         working-directory: binaries
         run: |
-          mkdir Windows
-          mkdir macOS
-          mkdir Linux
-          mv contrast-win.exe Windows/contrast.exe
+          mv contrast-win.exe contrast.exe
+          zip contrast-windows.zip contrast.exe
+
           chmod +x contrast-macos
+          mv contrast-macos contrast
+          tar -czvf contrast-macos.tar.gz contrast
+
           chmod +x contrast-linux
-          mv contrast-macos macOS/contrast
-          mv contrast-linux Linux/contrast
+          mv contrast-linux contrast
+          tar -czvf contrast-linux.tar.gz contrast
 
       - uses: actions/upload-artifact@v3
         with:
