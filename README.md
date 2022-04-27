@@ -17,7 +17,7 @@ npm install -g @contrast/contrast
 [Homebrew](https://brew.sh/):
 
 ```shell
-brew tap contrastsecurity/homebrew-contrast
+brew tap contrastsecurity/tap
 brew install contrast
 ```
 
