@@ -19,8 +19,20 @@ jobs:
       - name: Generate Binaries
         run: |
           npm run pkg
+      
+      - name: Prepare Artifacts
+        working-directory: binaries
+        run: |
+          mkdir Windows
+          mkdir macOS
+          mkdir Linux
+          mv contrast-win.exe Windows/contrast.exe
+          chmod +x contrast-macos
+          chmod +x contrast-linux
+          mv contrast-macos macOS/contrast
+          mv contrast-linux Linux/contrast
 
       - uses: actions/upload-artifact@v3
         with:
           name: contrast-bin
-          path: binaries/*
+          path: binaries
