@@ -1,0 +1,42 @@
+{
+    "$metadata": {
+        "httpStatusCode": 200,
+        "requestId": "c1495998-4606-46ba-b4fc-f7d0d165172d",
+        "attempts": 1,
+        "totalRetryDelay": 0
+    },
+    "Code": {
+        "Location": "https://awslambda-eu-cent-1-tasks.s3.eu-central-1.amazonaws.com/snapshots/123456789012/FunctionLambda-90e7680-c598cb5f-6bc9-4107-9fe7-13c126eb3b9e?versionId=ThxUComOVL.qnyEN9Bmi3xzK1JshuKA3&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEGcaDGV1LWNlbnRyYWwtMSJIMEYCIQDAMKTGQ5WEMHM9H7cZQugjEX8QWvq5zRxtXg%2Fz6m9lmAIhAMst%2F5iQkOPJ%2BNfflPiwD4GQchajTfvbNvVeGlz%2BdFi%2FKokECPD%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQAxoMNjgwNjg2NTU5NDM0IgwPQDJYINU9W7Csw4sq3QO52WKm5PvlVEeLrwstuDqPPKxhdK57A6z2foEF0Bp%2Bz%2Fp%2Flei2DzbpqjPDluzljZmzh3kP8QKPwq25Yk59%2BfXnxlSkHYe3GXO6W6VLBkPk81T0C9keVwdMijW1ZV94KN8qBB17kERR3sFIhBWXJRLhXSAdLREAfNLaE%2FgnP1eC1b5MZCBW46lbjmYHhHshgZJEUD2fy%2BRuOB4HijldLkpHKgZfwiD0ICXkvxF5NQT6tUhlQPNN%2BCrC2RQ0NSkmjXiaL2BXaDxaQVhZwMTGzBEyLAonA9bSisObWrVEjJcC4%2Bqz9ce25l2yYf77lEXWymEp9NvFFcUNAt6tt%2FAm2qMixcLxV0Y2NuBUBjIvPnNnTvBop%2FvAC1Rh6033AmWpmkK0tD65wEsTS4XAEtnD%2B%2Bku4r6kzatRJ88Lq9YOTbjs%2BMEccy9YIFp7Rwf2%2Bdw3EKHSqz4aB0R9KYa07NooZ%2Bym1VZWfGLfhFRJwKRLk3qKkY%2Bj4laizIE%2BBgqC7f7%2FYXcFk8RGX8vlX5y%2BMKWhBXoMPqAPG7ruoG1RbjQX8TEJvuG0G8c5x76fRjB2VRlykY78wa7%2B83a8oBqMfojq7hQWByNv%2B13KHVIIqrG87tL%2BtrmS7GAoils0vXf0Mvowqt6RkgY6pAGKzTtWpXiIhFLe5n2CNNDMuT9xCSCpQIWf2M9GcNabj%2FAUHIa81gvZwuHzB6DYpEj2cZ7wO22Ve%2FRLIrzdkBROoRYnT0GFevXUJAoO2WolWU13JS7owlBPTW7aET6o7fHJUhwAxPZPCp1cSaFMO5cDN%2BTOVm7V6P4es6m87S1yozp5SzHx3KblhJJF6krPHX6YCWC%2B%2FAu9tu7PqgiZ3RQTZ26f4A%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220330T153702Z&X-Amz-SignedHeaders=host&X-Amz-Expires=600&X-Amz-Credential=ASIAZ47AUUDFFU2TD45R%2F20220330%2Feu-central-1%2Fs3%2Faws4_request&X-Amz-Signature=4f9187001f127561afee310d9a127acacb5064c51688f7cd65f98ccb0a7aaa10",
+        "RepositoryType": "S3"
+    },
+    "Configuration": {
+        "Architectures": ["x86_64"],
+        "CodeSha256": "KNNSfx0YOrZ+pG3fK0qbGBJv/b8V0/gWFFkFw581i4o=",
+        "CodeSize": 39577174,
+        "DeadLetterConfig": {
+            "TargetArn": "arn:aws:sqs:eu-central-1:123456789012:devlocaleuDeadLetterQ-89016d3"
+        },
+        "Description": "",
+        "Environment": {
+            "Variables": {
+                "EVENTS_BUCKET": "devlocaleu-cn-events-4h6eig-eu-central-1-1676820",
+                "AGENTS_TABLE": "devlocaleu.agent.agents"
+            }
+        },
+        "EphemeralStorage": { "Size": 512 },
+        "FunctionArn": "arn:aws:lambda:eu-central-1:123456789012:function:FunctionLambda-90e7680",
+        "FunctionName": "FunctionLambda-90e7680",
+        "Handler": "com.contrastsecurity.scan.ScanHandler::handleEventDataWithContext",
+        "LastModified": "2022-03-28T11:14:56.000+0000",
+        "LastUpdateStatus": "Successful",
+        "MemorySize": 1024,
+        "PackageType": "Zip",
+        "RevisionId": "d174710a-23ff-499b-a7ba-61036beabd7a",
+        "Role": "arn:aws:iam::123456789012:role/Function_Role",
+        "Runtime": "java11",
+        "State": "Active",
+        "Timeout": 900,
+        "TracingConfig": { "Mode": "PassThrough" },
+        "Version": "$LATEST"
+    }
+}
