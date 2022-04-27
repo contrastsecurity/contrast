@@ -8,14 +8,21 @@ This initial release supports both Java and Python functions.
 
 ### Download
 
-Binaries for the Contrast CLI are available for [Windows](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-windows.zip), [macOS](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-macos.tar.gz) and [Linux](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-linux.tar.gz).
+You can install using [NPM](https://npmjs.com):
 
-You can also use [Homebrew](https://brew.sh/):
+```shell
+npm install -g @contrast/contrast
+```
+
+[Homebrew](https://brew.sh/):
 
 ```shell
 brew tap contrastsecurity/homebrew-contrast
 brew install contrast
 ```
+
+or download binaries for [Windows](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-windows.zip), [macOS](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-macos.tar.gz) and [Linux](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-linux.tar.gz).
+
 
 ### Prerequisites
 
