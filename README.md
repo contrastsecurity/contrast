@@ -81,11 +81,12 @@ contrast lambda --help
 
 ## Commands
 
- * `auth` - Authenticate Contrast using your `Github` or `Google` account
- * `lambda` - Perform scan on AWS Lambda function
- * `version` - Displays version of Contrast CLI
- * `config` - Displays stored credentials (`–c, --clear` - Removes stored credentials)
- * `help` - Displays usage guide
+ * `contrast auth` &ndash; Authenticate using your GitHub or Google account
+ * `contrast lambda` &ndash; Perform a scan on an AWS Lambda function
+ * `contrast config` &ndash; Display your stored credentials
+ * `contrast config --clear` &ndash; Remove your stored credentials
+ * `contrast version` &ndash; Display the installed version of the Contrast CLI
+ * `contrast help` &ndash; Display help
 
 ## Example
 
