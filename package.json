@@ -70,7 +70,8 @@
     "lint": "eslint --config .eslintrc.json . --ext .ts",
     "test": "jest --testPathIgnorePatterns=./test-integration/",
     "test-int": "jest ./test-integration/scan/",
-    "test-jest": "jest"
+    "test-jest": "jest",
+    "pkg": "pkg ."
   },
   "dependencies": {
     "@aws-sdk/client-iam": "^3.53.0",

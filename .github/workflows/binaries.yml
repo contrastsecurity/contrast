@@ -1,0 +1,26 @@
+name: Generate Binaries
+on: [push, pull_request]
+
+jobs:
+  generate-binaries:
+
+    runs-on: ubuntu-latest:
+
+    steps:
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      
+      - name: Install dependencies
+        run: |
+          npm install
+      
+      - name: Generate Binaries
+        run: |
+          npm run pkg
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: binaries
+          path: binaries
