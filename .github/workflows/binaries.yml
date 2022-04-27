@@ -25,14 +25,17 @@ jobs:
         run: |
           mv contrast-win.exe contrast.exe
           zip contrast-windows.zip contrast.exe
+          rm contrast.exe
 
           chmod +x contrast-macos
           mv contrast-macos contrast
           tar -czvf contrast-macos.tar.gz contrast
+          rm contrast
 
           chmod +x contrast-linux
           mv contrast-linux contrast
           tar -czvf contrast-linux.tar.gz contrast
+          rm contrast
 
       - uses: actions/upload-artifact@v3
         with:
