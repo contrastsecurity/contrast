@@ -1,4 +1,4 @@
-# Contrast Command Line Interface
+# Contrast CLI
 
 Install Contrast, authenticate, and then start running a Lambda scan.
 This version supports **Java** and **Python** functions on AWS.
