@@ -1,5 +1,6 @@
 const commandLineUsage = require('command-line-usage')
 const i18n = require('i18n')
+const constants = require('../constants')
 
 const scanUsageGuide = commandLineUsage([
   {
@@ -17,51 +18,19 @@ const scanUsageGuide = commandLineUsage([
   },
   {
     header: i18n.__('constantsScanOptions'),
-    content: [
-      {
-        name: i18n.__('scanOptionsFileName'),
-        summary:
-          '{italic ' +
-          i18n.__('constantsOptional') +
-          '}: ' +
-          i18n.__('scanOptionsFileNameSummary')
-      },
-      {
-        name: i18n.__('scanOptionsLanguage'),
-        summary:
-          '{italic ' +
-          i18n.__('constantsOptional') +
-          '}: ' +
-          i18n.__('scanOptionsLanguageSummaryOptional') +
-          '{italic ' +
-          i18n.__('constantsRequired') +
-          '}: ' +
-          i18n.__('scanOptionsLanguageSummaryRequired')
-      },
-      {
-        name: i18n.__('scanOptionsName'),
-        summary:
-          '{italic ' +
-          i18n.__('constantsOptional') +
-          '}: ' +
-          i18n.__('scanOptionsNameSummary')
-      },
-      {
-        name: i18n.__('scanOptionsTimeout'),
-        summary:
-          '{italic ' +
-          i18n.__('constantsOptional') +
-          '}: ' +
-          i18n.__('scanOptionsTimeoutSummary')
-      },
-      {
-        name: i18n.__('scanOptionsVerbose'),
-        summary:
-          '{italic ' +
-          i18n.__('constantsOptional') +
-          '}: ' +
-          i18n.__('scanOptionsVerboseSummary')
-      }
+    optionList: constants.commandLineDefinitions.scanOptionDefinitions,
+    hide: [
+      'project-id',
+      'organization-id',
+      'api-key',
+      'authorization',
+      'host',
+      'proxy',
+      'help',
+      'ff',
+      'ignore-cert-errors',
+      'verbose',
+      'debug'
     ]
   },
   {

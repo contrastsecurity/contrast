@@ -10,10 +10,12 @@ import { log } from './logUtils'
 import { pollScanUntilCompletion } from './scanDetailCompletion'
 import { requestScanFunctionPost } from './scanRequest'
 import { getScanResults } from './scanResults'
-import { prettyPrintResults } from './utils'
+import { printResults } from './utils'
+import { getAllLambdas, printAvailableLambdas } from './lambdaUtils'
 
 type LambdaOptions = {
   functionName?: string
+  listFunctions?: boolean
   region?: string
   endpointUrl?: string
   profile?: string
@@ -42,38 +44,49 @@ const printHelpMessage = () => {
 }
 
 const getLambdaOptions = (argv: string[]) => {
-  const lambdaDefinitions = [
-    { name: 'function-name', alias: 'f', type: String },
-    { name: 'region', alias: 'r', type: String },
-    { name: 'endpoint-url', alias: 'e', type: String },
-    { name: 'profile', alias: 'p', type: String },
-    { name: 'help', alias: 'h', type: Boolean },
-    { name: 'verbose', alias: 'v', type: Boolean },
-    { name: 'json-output', alias: 'j', type: Boolean }
-  ]
+  try {
+    const lambdaDefinitions = [
+      { name: 'function-name', alias: 'f', type: String },
+      { name: 'list-functions', alias: 'l', type: Boolean },
+      { name: 'region', alias: 'r', type: String },
+      { name: 'endpoint-url', alias: 'e', type: String },
+      { name: 'profile', alias: 'p', type: String },
+      { name: 'help', alias: 'h', type: Boolean },
+      { name: 'verbose', alias: 'v', type: Boolean },
+      { name: 'json-output', alias: 'j', type: Boolean }
+    ]
 
-  const lambdaOptions: LambdaOptions = commandLineArgs(lambdaDefinitions, {
-    argv,
-    partial: true,
-    camelCase: true,
-    caseInsensitive: true
-  })
+    const lambdaOptions: LambdaOptions = commandLineArgs(lambdaDefinitions, {
+      argv,
+      partial: true,
+      camelCase: true,
+      caseInsensitive: true
+    })
 
-  return lambdaOptions
+    return lambdaOptions
+  } catch (error) {
+    throw new CliError(ERRORS.VALIDATION_FAILED, {
+      description: (error as Error).message
+    })
+  }
 }
 
 const processLambda = async (argv: string[]) => {
-  const lambdaOptions = getLambdaOptions(argv)
-  const { help } = lambdaOptions
-
-  if (help) {
-    return handleLambdaHelp()
-  }
-
   try {
+    const lambdaOptions = getLambdaOptions(argv)
+    const { help } = lambdaOptions
+
+    if (help) {
+      return handleLambdaHelp()
+    }
+
     validateRequiredLambdaParams(lambdaOptions)
 
-    await actualProcessLambda(lambdaOptions)
+    if (lambdaOptions.listFunctions) {
+      await getAvailableFunctions(lambdaOptions)
+    } else {
+      await actualProcessLambda(lambdaOptions)
+    }
   } catch (error) {
     if (error instanceof CliError) {
       console.error(error.getErrorMessage())
@@ -82,6 +95,11 @@ const processLambda = async (argv: string[]) => {
     }
     process.exit(1)
   }
+}
+
+const getAvailableFunctions = async (lambdaOptions: LambdaOptions) => {
+  const lambdas = await getAllLambdas(lambdaOptions)
+  printAvailableLambdas(lambdas, { runtimes: ['python', 'java'] })
 }
 
 const actualProcessLambda = async (lambdaOptions: LambdaOptions) => {
@@ -134,18 +152,20 @@ const actualProcessLambda = async (lambdaOptions: LambdaOptions) => {
   log(`----- Scan completed ${(scanDurationMs / 1000).toFixed(2)}s -----`)
 
   if (results?.length) {
-    prettyPrintResults(results)
+    printResults(results)
   }
 }
 
 const validateRequiredLambdaParams = (options: LambdaOptions) => {
   if (options._unknown?.length) {
     throw new CliError(ERRORS.VALIDATION_FAILED, {
-      description: i18n.__('notSupportedFlags', options._unknown.join('\n'))
+      description: i18n.__('notSupportedFlags', {
+        flags: options._unknown.join('\n')
+      })
     })
   }
 
-  if (!options?.functionName) {
+  if (!options?.functionName && !options?.listFunctions) {
     throw new CliError(ERRORS.VALIDATION_FAILED, {
       errorCode: 'missingFunctionName'
     })
@@ -158,10 +178,9 @@ const validateRequiredLambdaParams = (options: LambdaOptions) => {
 
   if (flagsWithoutValues.length) {
     throw new CliError(ERRORS.VALIDATION_FAILED, {
-      description: i18n.__(
-        'missingFlagArguments',
-        flagsWithoutValues.join('\n')
-      )
+      description: i18n.__('missingFlagArguments', {
+        flags: flagsWithoutValues.join('\n')
+      })
     })
   }
 }
@@ -171,4 +190,4 @@ const handleLambdaHelp = () => {
   process.exit(0)
 }
 
-export { processLambda, LambdaOptions, ApiParams }
+export { processLambda, LambdaOptions, ApiParams, getAvailableFunctions }

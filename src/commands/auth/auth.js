@@ -11,8 +11,21 @@ const {
   succeedSpinner
 } = require('../../utils/oraWrapper')
 const { TIMEOUT, AUTH_UI_URL } = require('../../constants/constants')
+const parsedCLIOptions = require('../../utils/parsedCLIOptions')
+const constants = require('../../constants')
+const commandLineUsage = require('command-line-usage')
 
-const processAuth = async config => {
+const processAuth = async (argv, config) => {
+  let authParams = parsedCLIOptions.getCommandLineArgsCustom(
+    argv,
+    constants.commandLineDefinitions.authOptionDefinitions
+  )
+
+  if (authParams.help) {
+    console.log(authUsageGuide)
+    process.exit(0)
+  }
+
   const token = uuidv4()
   const url = `${AUTH_UI_URL}/?token=${token}`
 
@@ -44,7 +57,7 @@ const isAuthComplete = async (token, timeout, config) => {
     let result = await pollAuthResult(token, client)
     if (result.statusCode === 200) {
       succeedSpinner(authSpinner, i18n.__('authSuccessMessage'))
-      console.log(i18n.__('runScanMessage'))
+      console.log(i18n.__('runAuthSuccessMessage'))
       return result.body
     }
     let endTime = new Date() - startTime
@@ -67,6 +80,17 @@ const pollAuthResult = async (token, client) => {
       console.log(err)
     })
 }
+
+const authUsageGuide = commandLineUsage([
+  {
+    header: i18n.__('authHeader'),
+    content: [i18n.__('constantsAuthHeaderContents')]
+  },
+  {
+    header: i18n.__('constantsAuthUsageHeader'),
+    content: [i18n.__('constantsAuthUsageContents')]
+  }
+])
 
 module.exports = {
   processAuth: processAuth

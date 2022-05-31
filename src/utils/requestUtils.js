@@ -8,7 +8,7 @@ function sendRequest({ options, method = 'put' }) {
 }
 
 const millisToSeconds = millis => {
-  return ((millis % 60000) / 1000).toFixed(0)
+  return (millis / 1000).toFixed(0)
 }
 
 const sleep = ms => {

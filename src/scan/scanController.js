@@ -8,8 +8,8 @@ const populateProjectIdAndProjectName = require('./populateProjectIdAndProjectNa
 const scan = require('./scan')
 const scanResults = require('./scanResults')
 const autoDetection = require('./autoDetection')
-const paramHandler = require('../utils/paramsUtil/paramHandler')
 const fileFunctions = require('./fileUtils')
+const { performance } = require('perf_hooks')
 
 const getTimeout = config => {
   if (config.timeout) {
@@ -22,21 +22,23 @@ const getTimeout = config => {
   }
 }
 
-const startScan = async () => {
-  let paramsAuth = paramHandler.getAuth()
-  let getScanSubCommands = paramHandler.getScanSubCommands()
-  const configToUse = { ...paramsAuth, ...getScanSubCommands }
-  if (configToUse.file === undefined || configToUse.file === null) {
-    await autoDetection.autoDetectFileAndLanguage(configToUse)
-  } else {
-    if (fileFunctions.fileExists(configToUse.file)) {
-      scan.zipValidator(configToUse)
-      autoDetection.assignLanguage([configToUse.file], configToUse)
-    } else {
+const fileAndLanguageLogic = async configToUse => {
+  if (configToUse.file) {
+    if (!fileFunctions.fileExists(configToUse.file)) {
       console.log(i18n.__('fileNotExist'))
-      process.exit(0)
+      process.exit(1)
+    }
+    return configToUse
+  } else {
+    if (configToUse.file === undefined || configToUse.file === null) {
+      await autoDetection.autoDetectFileAndLanguage(configToUse)
     }
   }
+}
+
+const startScan = async configToUse => {
+  const startTime = performance.now()
+  await fileAndLanguageLogic(configToUse)
 
   if (!configToUse.projectId) {
     configToUse.projectId = await populateProjectIdAndProjectName.populateProjectId(
@@ -46,7 +48,7 @@ const startScan = async () => {
   const codeArtifactId = await scan.sendScan(configToUse)
 
   if (!configToUse.ff) {
-    const startScanSpinner = returnOra('Contrast Scan started')
+    const startScanSpinner = returnOra('🚀 Contrast Scan started')
     startSpinner(startScanSpinner)
     const scanDetail = await scanResults.returnScanResults(
       configToUse,
@@ -58,9 +60,14 @@ const startScan = async () => {
       configToUse,
       scanDetail.id
     )
+    const endTime = performance.now()
+    const scanDurationMs = endTime - startTime
     succeedSpinner(startScanSpinner, 'Contrast Scan complete')
+    console.log(
+      `----- Scan completed in ${(scanDurationMs / 1000).toFixed(2)}s -----`
+    )
     const projectOverview = await scanResults.returnScanProjectById(configToUse)
-    return { projectOverview, scanResultsInstances }
+    return { projectOverview, scanDetail, scanResultsInstances }
   }
 }
 

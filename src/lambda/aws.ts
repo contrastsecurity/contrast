@@ -1,3 +1,4 @@
+import i18n from 'i18n'
 import {
   Lambda,
   GetFunctionCommand,
@@ -44,12 +45,9 @@ const getLambdaClient = (lambdaOptions: LambdaOptions) => {
     const clientOptions = getAwsClientOptions(lambdaOptions)
     return new Lambda(clientOptions)
   } catch (error) {
-    const errorObj = error as any
-    if (errorObj?.code === 'ERR_INVALID_URL') {
-      throw new CliError(ERRORS.AWS_ERROR, { description: errorObj.message })
-    }
-
-    throw error
+    throw new CliError(ERRORS.AWS_ERROR, {
+      description: (error as Error).message
+    })
   }
 }
 
@@ -89,7 +87,9 @@ const getLayersLinks = async (
       }
     } catch (e) {
       if (e instanceof ResourceNotFoundException) {
-        e.message = `The layer ${layerDict.Arn} could not be found. We will continue the scan without it.`
+        e.message = i18n.__('layerNotFound', {
+          layerArn: layerDict.Arn || 'unknown_arn'
+        })
         throw e
       }
       throw e
@@ -190,10 +190,10 @@ const getAttachedPolicies = async (roleName: string, client: IAMClient) => {
   )
   const attachedPoliciesPromises = listAttachedPolicies.map(
     async (policyDict: { PolicyArn: any; PolicyName: any }) => {
-      const getPolicyCommand = new GetPolicyCommand({
-        PolicyArn: policyDict.PolicyArn
-      })
+      const { PolicyArn, PolicyName } = policyDict
+      const getPolicyCommand = new GetPolicyCommand({ PolicyArn })
       const policy = await client.send(getPolicyCommand)
+
       if (policy.Policy) {
         const getPolicyVersionCommand = new GetPolicyVersionCommand({
           PolicyArn: policy.Policy.Arn,
@@ -203,8 +203,9 @@ const getAttachedPolicies = async (roleName: string, client: IAMClient) => {
         const policyDoc = JSON.parse(
           decodeURIComponent(policyVersion?.PolicyVersion?.Document || '{}')
         )
-        policyDoc['PolicyName'] = policyDict.PolicyName
-        policyDoc['PolicyArn'] = policyDict.PolicyArn
+
+        policyDoc['PolicyName'] = PolicyName
+        policyDoc['PolicyArn'] = PolicyArn
         return policyDoc
       }
     }

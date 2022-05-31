@@ -6,10 +6,10 @@ const { AUTH_CALLBACK_URL } = require('../constants/constants')
 function HTTPClient(config) {
   const apiKey = config.apiKey
   const authToken = config.authorization
-  // this.rejectUnauthorized = !additionalParams.ignore_cert_errors
+  this.rejectUnauthorized = !config.ignoreCertErrors
 
-  const superApiKey = config.super_api_key
-  const superAuthToken = config.super_authorization
+  const superApiKey = config.superApiKey
+  const superAuthToken = config.superAuthorization
 
   this.requestOptions = {
     forever: true,
@@ -91,6 +91,15 @@ HTTPClient.prototype.getSpecificScanResult = function getSpecificScanResult(
   return requestUtils.sendRequest({ method: 'get', options })
 }
 
+HTTPClient.prototype.getSpecificScanResultSarif = function getSpecificScanResultSarif(
+  config,
+  scanId
+) {
+  const options = _.cloneDeep(this.requestOptions)
+  options.url = createRawOutputURL(config, scanId)
+  return requestUtils.sendRequest({ method: 'get', options })
+}
+
 HTTPClient.prototype.getScanId = function getScanId(config, codeArtifactId) {
   const options = _.cloneDeep(this.requestOptions)
   let url = createGetScanIdURL(config)
@@ -119,8 +128,10 @@ HTTPClient.prototype.createProjectId = function createProjectId(config) {
 
   options.body = {
     name: config.name,
-    archived: 'false',
-    language: config.language
+    archived: 'false'
+  }
+  if (config.language) {
+    options.body.language = config.language
   }
   options.url = createHarmonyProjectsUrl(config)
   return requestUtils.sendRequest({ method: 'post', options })
@@ -159,6 +170,80 @@ HTTPClient.prototype.pollForAuth = function pollForAuth(token) {
   return requestUtils.sendRequest({ method: 'post', options })
 }
 
+HTTPClient.prototype.catalogueCommand = function catalogueCommand(config) {
+  const options = _.cloneDeep(this.requestOptions)
+  let url = createAppCreateURL(config)
+  options.url = url
+
+  let requestBody = {}
+  requestBody.name = config.applicationName
+  requestBody.language = config.language.toUpperCase()
+  requestBody.appGroups = config.appGroups
+  requestBody.metadata = config.metadata
+  requestBody.tags = config.tags
+  requestBody.code = config.code
+  options.body = requestBody
+
+  return requestUtils.sendRequest({ method: 'post', options })
+}
+
+HTTPClient.prototype.sendSnapshot = function sendSnapshot(requestBody, config) {
+  const options = _.cloneDeep(this.requestOptions)
+  let url = createSnapshotURL(config)
+  options.url = url
+  options.body = requestBody
+  return requestUtils.sendRequest({ method: 'post', options })
+}
+
+HTTPClient.prototype.getReport = function getReport(config) {
+  const options = _.cloneDeep(this.requestOptions)
+  let url = createReportUrl(config)
+  options.url = url
+
+  return requestUtils.sendRequest({ method: 'get', options })
+}
+
+HTTPClient.prototype.getSpecificReport = function getSpecificReport(
+  config,
+  reportId
+) {
+  const options = _.cloneDeep(this.requestOptions)
+  let url = createSpecificReportUrl(config, reportId)
+  options.url = url
+
+  return requestUtils.sendRequest({ method: 'get', options })
+}
+
+HTTPClient.prototype.getLibraryVulnerabilities = function getLibraryVulnerabilities(
+  requestBody,
+  config
+) {
+  const options = _.cloneDeep(this.requestOptions)
+  let url = createLibraryVulnerabilitiesUrl(config)
+  options.url = url
+  options.body = requestBody
+
+  return requestUtils.sendRequest({ method: 'put', options })
+}
+
+HTTPClient.prototype.getAppId = function getAppId(config) {
+  const options = _.cloneDeep(this.requestOptions)
+  let url = createAppNameUrl(config)
+  options.url = url
+  return requestUtils.sendRequest({ method: 'get', options })
+}
+
+HTTPClient.prototype.getDependencyTree = function getReport(
+  orgUuid,
+  appId,
+  reportId
+) {
+  const options = _.cloneDeep(this.requestOptions)
+  let url = createGetDependencyTree(options.uri, orgUuid, appId, reportId)
+  options.url = url
+  return requestUtils.sendRequest({ method: 'get', options })
+}
+
 // serverless - lambda
 function getServerlessHost(config = {}) {
   const originalHost = config?.host || config?.get('host')
@@ -195,10 +280,10 @@ function createScanResultsGetUrl(config, params, scanId, functionArn) {
 
 HTTPClient.prototype.postFunctionScan = async function postFunctionScan(
   config,
-  parameters,
+  params,
   body
 ) {
-  const url = createScanFunctionPostUrl(config, parameters)
+  const url = createScanFunctionPostUrl(config, params)
   const options = { ...this.requestOptions, body, url }
 
   return requestUtils.sendRequest({ method: 'post', options })
@@ -206,10 +291,10 @@ HTTPClient.prototype.postFunctionScan = async function postFunctionScan(
 
 HTTPClient.prototype.getScanResources = async function getScanResources(
   config,
-  parameters,
+  params,
   scanId
 ) {
-  const url = createScanResourcesGetUrl(config, parameters, scanId)
+  const url = createScanResourcesGetUrl(config, params, scanId)
   const options = { ...this.requestOptions, url }
 
   return requestUtils.sendRequest({ method: 'get', options })
@@ -217,13 +302,27 @@ HTTPClient.prototype.getScanResources = async function getScanResources(
 
 HTTPClient.prototype.getFunctionScanResults = async function getFunctionScanResults(
   config,
-  parameters,
+  params,
   scanId,
   functionArn
 ) {
-  const url = createScanResultsGetUrl(config, parameters, scanId, functionArn)
+  const url = createScanResultsGetUrl(config, params, scanId, functionArn)
   const options = { ...this.requestOptions, url }
 
+  return requestUtils.sendRequest({ method: 'get', options })
+}
+
+HTTPClient.prototype.checkLibrary = function checkLibrary(data) {
+  const options = _.cloneDeep(this.requestOptions)
+  let url = createDataUrl()
+  options.url = url
+  options.body = data
+  return requestUtils.sendRequest({ method: 'post', options })
+}
+
+HTTPClient.prototype.getSbom = function getSbom(config) {
+  const options = _.cloneDeep(this.requestOptions)
+  options.url = createSbomCycloneDXUrl(config)
   return requestUtils.sendRequest({ method: 'get', options })
 }
 
@@ -233,11 +332,11 @@ const createGetScanIdURL = config => {
 }
 
 const createScanResultsInstancesURL = (config, scanId) => {
-  return `${config.host}/Contrast/api/sast/v1/organizations/${config.organizationId}/projects/${config.projectId}/scans/${scanId}/result-instances?sort=severity,asc`
+  return `${config.host}/Contrast/api/sast/v1/organizations/${config.organizationId}/projects/${config.projectId}/scans/${scanId}/result-instances/info?size=50&page=0&last=false&sort=severity,asc`
 }
 
-const createRawOutputURL = (config, codeArtifactId) => {
-  return `${config.host}/Contrast/api/sast/v1/organizations/${config.organizationId}/projects/${config.projectId}/scans/${codeArtifactId}/raw-output`
+const createRawOutputURL = (config, scanId) => {
+  return `${config.host}/Contrast/api/sast/v1/organizations/${config.organizationId}/projects/${config.projectId}/scans/${scanId}/raw-output`
 }
 
 const createSpecificScanResultURL = (config, scanId) => {
@@ -262,6 +361,42 @@ const createGlobalPropertiesUrl = protocol => {
 
 const pollForAuthUrl = () => {
   return `${AUTH_CALLBACK_URL}/auth/credentials`
+}
+
+function createSnapshotURL(config) {
+  return `${config.host}/Contrast/api/ng/sca/organizations/${config.organizationId}/applications/${config.applicationId}/snapshots`
+}
+
+const createAppCreateURL = config => {
+  return `${config.host}/Contrast/api/ng/sca/organizations/${config.organizationId}/applications/create`
+}
+
+const createAppNameUrl = config => {
+  return `${config.host}/Contrast/api/ng/${config.organizationId}/applications/name?filterText=${config.applicationName}`
+}
+
+function createLibraryVulnerabilitiesUrl(config) {
+  return `${config.host}/Contrast/api/ng/${config.organizationId}/libraries/artifactsByGroupNameVersion`
+}
+
+function createReportUrl(config) {
+  return `${config.host}/Contrast/api/ng/sca/organizations/${config.organizationId}/applications/${config.applicationId}/reports`
+}
+
+function createSpecificReportUrl(config, reportId) {
+  return `${config.host}/Contrast/api/ng/sca/organizations/${config.organizationId}/applications/${config.applicationId}/reports/${reportId}?nodesToInclude=PROD`
+}
+
+function createDataUrl() {
+  return `https://ardy.contrastsecurity.com/production`
+}
+
+const createGetDependencyTree = (protocol, orgUuid, appId, reportId) => {
+  return `${protocol}/Contrast/api/ng/sca/organizations/${orgUuid}/applications/${appId}/reports/${reportId}`
+}
+
+function createSbomCycloneDXUrl(config) {
+  return `${config.host}/Contrast/api/ng/${config.organizationId}/applications/${config.applicationId}/libraries/sbom/cyclonedx`
 }
 
 module.exports = HTTPClient

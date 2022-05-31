@@ -22,6 +22,10 @@ const lambdaUsageGuide = commandLineUsage([
         summary: i18n.__('lambdaFunctionNameSummery')
       },
       {
+        name: i18n.__('lambdaListFunctionsOption'),
+        summary: i18n.__('lambdaListFunctionsSummery')
+      },
+      {
         name: i18n.__('lambdaEndpointOption'),
         summary:
           '{italic ' +

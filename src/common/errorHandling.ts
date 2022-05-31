@@ -1,4 +1,58 @@
 import i18n from 'i18n'
+import { sortBy } from 'lodash'
+
+const handleResponseErrors = (res: any, api: string) => {
+  if (res.statusCode === 400) {
+    api === 'catalogue' ? badRequestError(true) : badRequestError(false)
+  } else if (res.statusCode === 401) {
+    unauthenticatedError()
+  } else if (res.statusCode === 403) {
+    forbiddenError()
+  } else if (res.statusCode === 407) {
+    proxyError()
+  } else {
+    if (api === 'snapshot' || api === 'catalogue') {
+      snapshotFailureError()
+    }
+    if (api === 'vulnerabilities') {
+      vulnerabilitiesFailureError()
+    }
+    if (api === 'report') {
+      reportFailureError()
+    }
+  }
+}
+
+const libraryAnalysisError = () => {
+  console.log(i18n.__('libraryAnalysisError'))
+}
+
+const snapshotFailureError = () => {
+  console.log(
+    '\n ******************************** ' +
+      i18n.__('snapshotFailureHeader') +
+      ' *********************************\n' +
+      i18n.__('snapshotFailureMessage')
+  )
+}
+
+const vulnerabilitiesFailureError = () => {
+  console.log(
+    '\n ******************************** ' +
+      i18n.__('snapshotFailureHeader') +
+      ' *********************************\n' +
+      i18n.__('vulnerabilitiesFailureMessage')
+  )
+}
+
+const reportFailureError = () => {
+  console.log(
+    '\n ******************************** ' +
+      i18n.__('snapshotFailureHeader') +
+      ' *********************************\n' +
+      i18n.__('reportFailureMessage')
+  )
+}
 
 const genericError = (missingCliOption: string) => {
   // prettier-ignore
@@ -19,6 +73,7 @@ const badRequestError = (catalogue: boolean) => {
 
 const forbiddenError = () => {
   generalError('forbiddenRequestErrorHeader', 'forbiddenRequestErrorMessage')
+  process.exit(1)
 }
 
 const proxyError = () => {
@@ -51,7 +106,7 @@ const getErrorMessage = (header: string, message?: string) => {
   const multiLine = message?.includes('\n')
   let finalMessage = ''
 
-  // i18n split the line if it includes "\n"
+  // i18n split the line if it includes '\n'
   if (multiLine) {
     finalMessage = `\n${message}`
   } else if (message) {
@@ -66,6 +121,31 @@ const generalError = (header: string, message?: string) => {
   console.log(finalMessage)
 }
 
+const findCommandOnError = (unknownOptions: string[]) => {
+  const commandKeywords = {
+    auth: 'auth',
+    audit: 'audit',
+    scan: 'scan',
+    lambda: 'lambda',
+    config: 'config'
+  }
+
+  const containsCommandKeyword = unknownOptions.some(
+    // @ts-ignore
+    command => commandKeywords[command]
+  )
+
+  if (containsCommandKeyword) {
+    const foundCommands = unknownOptions.filter(
+      // @ts-ignore
+      command => commandKeywords[command]
+    )
+
+    //return the first command found
+    return foundCommands[0]
+  }
+}
+
 export {
   genericError,
   unauthenticatedError,
@@ -75,5 +155,8 @@ export {
   failOptionError,
   hostWarningError,
   generalError,
-  getErrorMessage
+  getErrorMessage,
+  handleResponseErrors,
+  libraryAnalysisError,
+  findCommandOnError
 }

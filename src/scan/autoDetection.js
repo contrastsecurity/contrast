@@ -1,7 +1,5 @@
 const i18n = require('i18n')
-const { zipValidator } = require('./scan')
 const fileFinder = require('./fileUtils')
-const { supportedLanguages } = require('../constants/constants')
 
 const autoDetectFileAndLanguage = async configToUse => {
   const entries = await fileFinder.findFile()
@@ -18,8 +16,6 @@ const autoDetectFileAndLanguage = async configToUse => {
     if (configToUse.name === undefined) {
       configToUse.name = entries[0]
     }
-    zipValidator(configToUse)
-    assignLanguage(entries, configToUse)
   } else {
     errorOnFileDetection(entries)
   }
@@ -46,32 +42,7 @@ const errorOnFileDetection = entries => {
   process.exit(1)
 }
 
-const assignLanguage = (entries, configToUse) => {
-  let split = entries[0].split('.')
-  const fileType = split[split.length - 1]
-  if (fileType === 'war' || fileType === 'jar') {
-    console.log('Language is Java')
-    configToUse.language = 'JAVA'
-  } else if (fileType === 'dll') {
-    console.log('Language is Dotnet')
-    configToUse.language = 'DOTNET'
-  } else if (fileType === 'js') {
-    console.log('Language is Javascript')
-    configToUse.language = supportedLanguages.JAVASCRIPT
-  } else if (fileType === 'zip') {
-    if (configToUse.language !== supportedLanguages.JAVASCRIPT) {
-      console.log(i18n.__('zipErrorScan'))
-      process.exit(1)
-    }
-    console.log('Language is Javascript within zip file')
-  } else {
-    console.log(i18n.__('unknownFileErrorScan'))
-    process.exit(1)
-  }
-}
-
 module.exports = {
   autoDetectFileAndLanguage,
-  assignLanguage,
   errorOnFileDetection
 }

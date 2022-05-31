@@ -6,6 +6,7 @@ type ContrastConfOptions = Partial<{
   apiKey: string
   orgId: string
   authHeader: string
+  numOfRuns: number
 }>
 
 type ContrastConf = Conf<ContrastConfOptions>
@@ -15,6 +16,7 @@ const localConfig = (name: string, version: string) => {
     configName: name
   })
   config.set('version', version)
+
   if (!config.has('host')) {
     config.set('host', 'https://ce.contrastsecurity.com/')
   }

@@ -1,29 +1,25 @@
 const { startScan } = require('../../scan/scanController')
-const paramHandler = require('../../utils/paramsUtil/paramHandler')
 const { formatScanOutput } = require('../../scan/scan')
 const { scanUsageGuide } = require('../../scan/help')
+const scanConfig = require('../../scan/scanConfig')
+const { saveScanFile } = require('../../utils/saveFile')
 
-const processScan = async () => {
-  let getScanSubCommands = paramHandler.getScanSubCommands()
-  if (getScanSubCommands.help) {
-    printHelpMessage()
-    process.exit(1)
-  }
+const processScan = async argvMain => {
+  let config = scanConfig.getScanConfig(argvMain)
 
-  let scanResults = await startScan()
+  let scanResults = await startScan(config)
   if (scanResults) {
     formatScanOutput(
       scanResults?.projectOverview,
       scanResults?.scanResultsInstances
     )
   }
-}
 
-const printHelpMessage = () => {
-  console.log(scanUsageGuide)
+  if (config.save !== undefined) {
+    await saveScanFile(config, scanResults)
+  }
 }
 
 module.exports = {
-  processScan,
-  printHelpMessage
+  processScan
 }

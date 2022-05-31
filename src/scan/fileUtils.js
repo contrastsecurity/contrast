@@ -4,7 +4,7 @@ const i18n = require('i18n')
 
 const findFile = async () => {
   console.log(i18n.__('searchingScanFileDirectory', process.cwd()))
-  return fg(['**/*.jar', '**/*.war', '**/*.zip', '**/*.dll'], {
+  return fg(['**/*.jar', '**/*.war', '**/*.zip', '**/*.dll', '**/*.exe'], {
     dot: false,
     deep: 3,
     onlyFiles: true
