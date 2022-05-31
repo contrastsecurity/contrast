@@ -4,11 +4,10 @@ const {
   unauthenticatedError,
   forbiddenError,
   proxyError,
-  hostWarningError,
   genericError
 } = require('../common/errorHandling')
 
-const handleResponseErrors = (res, api, hostPresent) => {
+const handleResponseErrors = (res, api) => {
   if (res.statusCode === 400) {
     api === 'catalogue' ? badRequestError(true) : badRequestError(false)
   } else if (res.statusCode === 401) {
@@ -18,7 +17,7 @@ const handleResponseErrors = (res, api, hostPresent) => {
   } else if (res.statusCode === 407) {
     proxyError()
   } else {
-    hostPresent === false ? hostWarningError() : genericError()
+    genericError()
   }
 }
 

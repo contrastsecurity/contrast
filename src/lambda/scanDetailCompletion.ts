@@ -1,3 +1,4 @@
+import i18n from 'i18n'
 import { sleep } from '../utils/requestUtils'
 import { getHttpClient } from '../utils/commonApi'
 import { ApiParams } from './lambda'
@@ -35,9 +36,8 @@ const pollScanUntilCompletion = async (
   const client = getHttpClient(config)
 
   const activeStatuses = ['PENDING', 'SCANNING', 'QUEUED']
-  const startedText = 'Scan started'
   const maxEndTime = new Date().getTime() + timeoutInMinutes * MS_IN_MINUTE
-  const startScanSpinner = ora.returnOra(startedText)
+  const startScanSpinner = ora.returnOra(i18n.__('scanStarted'))
   ora.startSpinner(startScanSpinner)
 
   await sleep(5000) // wait 5 sec before first polling
@@ -62,12 +62,12 @@ const pollScanUntilCompletion = async (
 
       await sleep(2 * 1000)
     } catch (error) {
-      ora.failSpinner(startScanSpinner, 'Scan Failed')
+      ora.failSpinner(startScanSpinner, i18n.__('scanFailed'))
       throw error
     }
 
     if (Date.now() >= maxEndTime) {
-      ora.failSpinner(startScanSpinner, 'Scan timed out')
+      ora.failSpinner(startScanSpinner, i18n.__('scanTimedOut'))
       throw new CliError(ERRORS.FAILED_TO_GET_SCAN, {
         errorCode: 'waitingTimedOut'
       })

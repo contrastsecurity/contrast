@@ -1,6 +1,129 @@
 import chalk from 'chalk'
-import { capitalize, groupBy, minBy, sortBy } from 'lodash'
+import { groupBy, sortBy, capitalize, minBy } from 'lodash'
+import i18n from 'i18n'
 import { log } from './logUtils'
+
+// fix for using `plural`
+// https://github.com/mashpie/i18n-node/issues/429
+i18n.setLocale('en')
+
+class PrintVulnerability {
+  index: number
+  vulnerability: any
+  group?: any[]
+  title: string
+  severity: string
+  remediation: string
+  description: string
+  recommendation: string
+  whatHappened: string
+
+  constructor(index: number, vulnerability: any, group?: any[]) {
+    const {
+      severityText,
+      title,
+      description,
+      remediation,
+      categoryText
+    } = vulnerability
+
+    this.group = group
+    this.vulnerability = vulnerability
+    this.index = index
+    this.title = title
+    this.severity = capitalize(severityText)
+    this.description = underlineLinks(description)
+    this.remediation = remediation?.description
+    this.recommendation = ''
+    this.whatHappened = ''
+
+    if (categoryText === 'PERMISSIONS') {
+      this.formatPermissions()
+    } else if (categoryText === 'DEPENDENCIES') {
+      this.formatDependencies()
+    }
+  }
+
+  formatPermissions() {
+    const { leastPrivilege, comment } = this.vulnerability.evidence
+    const violatingPolicies = leastPrivilege?.violatingPolicies || []
+
+    const filteredPolicies = violatingPolicies
+      .filter((vp: any) => vp?.suggestedPolicy?.suggestedPolicyCode?.length)
+      .map((vp: any) => vp?.suggestedPolicy)
+
+    const shouldNumerate = filteredPolicies.length > 1
+    filteredPolicies.forEach((policies: any, i: number) => {
+      const { suggestedPolicyCode, description } = policies
+
+      suggestedPolicyCode.forEach((policy: any) => {
+        const { snippet, title } = policy
+        this.recommendation += shouldNumerate
+          ? ` ${i + 1}. ${description}\n`
+          : `${description}\n`
+
+        if (title !== 'DELETE POLICY') {
+          this.recommendation += `${snippet}\n`
+        }
+      })
+    })
+
+    if (comment?.length) {
+      const splitComment = (comment: string) => {
+        const [policy, description] = comment.split(':').map(c => c.trim())
+        return { policy, description }
+      }
+      const groupByPolicy = groupBy(comment, c => splitComment(c).policy)
+
+      Object.entries(groupByPolicy).forEach(([policy, commentArr]) => {
+        const comments = commentArr
+          .map(splitComment)
+          .map(({ description }) => ` - ${description}`)
+          .join('\n')
+        this.whatHappened += i18n.__('whatHappenedItem', { policy, comments })
+      })
+    }
+  }
+
+  formatDependencies() {
+    if (!this.group?.length) {
+      this.recommendation = this.vulnerability?.remediation?.description
+      return
+    }
+
+    const maxSeverity = minBy(this.group, 'severity')
+    this.title = i18n.__('vulnerableDependency')
+    this.severity = capitalize(maxSeverity.severityText)
+    this.recommendation = maxSeverity.remediation?.description
+
+    const library = groupByDependency({ title: this.vulnerability.title })
+    const [packageName, version] = library.split(':')
+    const allCves = this.group.map(groupByCVE)
+
+    this.description = i18n.__mf('vulnerableDependencyDescriptions', {
+      NUM: this.group.length,
+      packageName,
+      version,
+      cves: allCves.join(' | ')
+    })
+  }
+
+  print() {
+    log(`${this.index}.`)
+    // prettier-ignore
+    log(`${chalk.bold(this.severity)} | ${chalk.bold(this.title)} ${this.description}`)
+
+    if (this.whatHappened) {
+      log(`\n${chalk.bold(i18n.__('whatHappenedTitle'))}\n${this.whatHappened}`)
+    }
+
+    if (this.recommendation) {
+      log(`${chalk.bold(i18n.__('recommendation'))}\n${this.recommendation}`)
+    }
+
+    log('')
+  }
+}
 
 const groupByCVE = ({ title }: any) =>
   title.substring(0, title.indexOf('[') - 1)
@@ -8,103 +131,50 @@ const groupByCVE = ({ title }: any) =>
 const groupByDependency = ({ title }: any) =>
   title.substring(title.indexOf('[') + 1, title.indexOf(']'))
 
-const prettyPrintResults = (results: any[]) => {
-  log('')
-
+const printResults = (results: any[]) => {
   //filter out any vulnerabs which is not least privilege or dependencies- cli does not handle other vulnerabs yet
   const vulnerabs = results.filter(r => r.category === 1 || r.category === 4)
   const sortBySeverity = sortBy(vulnerabs, ['severity', 'title'])
   const notDependencies = sortBySeverity.filter(r => r.category !== 1)
   const dependencies = sortBySeverity.filter(r => r.category === 1)
   const dependenciesByLibrary = groupBy(dependencies, groupByDependency)
-  const dependenciesCount = Object.keys(dependenciesByLibrary).length
 
-  notDependencies.forEach(printVulnerability)
+  log('')
 
+  notDependencies.forEach((vulnerability: any, index: number) => {
+    const printVulnerab = new PrintVulnerability(index + 1, vulnerability)
+    printVulnerab.print()
+  })
   const prevIndex = notDependencies.length + 1
-  Object.entries(dependenciesByLibrary).forEach(([library, group], i) => {
-    const maxSeverity = minBy(group, 'severity')
-    const allCves = group.map(groupByCVE)
-
-    log(prevIndex + i)
-    log(
-      `${chalk.bold(capitalize(maxSeverity.severityText))} | ${chalk.bold(
-        'Vulnerable dependency'
-      )} ${library} has ${group.length} known CVEs`
-    )
-    log(allCves.join(', '))
-    if (maxSeverity.remediation?.description) {
-      log(
-        `${chalk.bold('Recommendation:')} ${
-          maxSeverity.remediation.description
-        }`
-      )
-    }
-    log('')
+  Object.entries(dependenciesByLibrary).forEach(([, group], i) => {
+    const printVulnerab = new PrintVulnerability(prevIndex + i, group[0], group)
+    printVulnerab.print()
   })
 
+  const dependenciesCount = Object.keys(dependenciesByLibrary).length
   const resultCount = notDependencies.length + dependenciesCount
+  log(i18n.__n('foundVulnerabilities', resultCount), { bold: true })
+
+  const counters = getNotDependenciesCounters(notDependencies)
+  if (dependenciesCount) {
+    counters.push(i18n.__n('dependenciesCount', dependenciesCount))
+  }
+  log(counters.join(' | '), { bold: true })
+}
+
+const getNotDependenciesCounters = (notDependencies: any[]) => {
   const groupByType = groupBy(notDependencies, ['categoryText'])
-  const summary = Object.values(groupByType).map(
+  return Object.values(groupByType).map(
     group => `${group.length} ${capitalize(group[0].categoryText)}`
   )
-  log(`Found ${resultCount} vulnerabilities`, { bold: true })
-  summary.push(`${dependenciesCount} Dependencies`)
-
-  log(chalk.bold(summary.join(' | ')))
 }
 
 const underlineLinks = (text: string) => {
   if (!text) {
     return text
   }
-
   const urlRegex = /(https?:\/\/[^\s]+)/g
   return text.replace(urlRegex, chalk.underline('$1'))
-}
-
-const printVulnerability = (vulnerability: any, index: number) => {
-  log(index + 1)
-  const descriptionWithLinks = underlineLinks(vulnerability.description)
-  log(
-    `${chalk.bold(capitalize(vulnerability.severityText))} | ${chalk.bold(
-      vulnerability.title
-    )} ${descriptionWithLinks}`
-  )
-
-  const category = vulnerability?.categoryText
-  switch (category) {
-    case 'PERMISSIONS':
-      printLeastPrivilegeRemediation(vulnerability)
-      break
-    default:
-      printRemediation(vulnerability)
-  }
-  log('')
-}
-
-const printLeastPrivilegeRemediation = (vulnerability: any) => {
-  log(
-    `${chalk.bold(
-      'Recommendation:'
-    )} Replace the existing policies with the following`
-  )
-
-  const violatingPolicies =
-    vulnerability?.evidence?.leastPrivilege?.violatingPolicies || []
-
-  violatingPolicies
-    .filter((vp: any) => vp?.suggestedPolicy?.suggestedPolicyCode?.length)
-    .map((vp: any) => vp?.suggestedPolicy?.suggestedPolicyCode)
-    .forEach((policies: any) => {
-      policies.forEach((policy: any) => {
-        console.log(policy.snippet)
-      })
-    })
-}
-
-const printRemediation = (vulnerability: any) => {
-  log(`Remediation - ${vulnerability?.remediation?.description || 'Unknown'}`)
 }
 
 function toLowerKeys(obj: Record<string, unknown>) {
@@ -115,11 +185,9 @@ function toLowerKeys(obj: Record<string, unknown>) {
   }, {} as Record<string, unknown>)
 }
 
-export { toLowerKeys, prettyPrintResults }
-
+export { toLowerKeys, printResults }
 export const exportedForTesting = {
-  printLeastPrivilegeRemediation,
-  printRemediation,
-  printVulnerability,
-  underlineLinks
+  underlineLinks,
+  printResults,
+  PrintVulnerability
 }

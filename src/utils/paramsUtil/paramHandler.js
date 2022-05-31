@@ -4,8 +4,8 @@ const envVariableParams = require('./envVariableParams')
 const { validateAuthParams } = require('../validationCheck')
 const i18n = require('i18n')
 
-const getAuth = () => {
-  let commandLineAuthParamsAuth = commandlineAuth.getAuth()
+const getAuth = params => {
+  let commandLineAuthParamsAuth = commandlineAuth.getAuth(params)
   let envVariableParamsAuth = envVariableParams.getAuth()
   let configStoreParamsAuth = configStoreParams.getAuth()
 
@@ -21,8 +21,4 @@ const getAuth = () => {
   }
 }
 
-const getScanSubCommands = () => {
-  return commandlineAuth.getScanParams()
-}
-
-module.exports = { getAuth: getAuth, getScanSubCommands: getScanSubCommands }
+module.exports = { getAuth: getAuth }

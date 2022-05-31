@@ -21,6 +21,11 @@ const createProjectId = async (config, client) => {
         console.log(i18n.__('foundExistingProjectScan'))
         return
       }
+      if (res.statusCode === 403) {
+        console.log(i18n.__('permissionsError'))
+        process.exit(1)
+        return
+      }
 
       if (res.statusCode === 201) {
         console.log(i18n.__('projectCreatedScan'))

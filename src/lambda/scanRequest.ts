@@ -24,8 +24,7 @@ const sendScanPostRequest = async (
   const client = getHttpClient(config)
 
   if (showProgress) {
-    // prettier-ignore
-    log(`${logSymbols.success} Sending Lambda Function scan request to Contrast`)
+    log(i18n.__('sendingScanRequest', { icon: logSymbols.success }))
   }
 
   const res = await client.postFunctionScan(config, params, functionsEvent)
@@ -33,7 +32,7 @@ const sendScanPostRequest = async (
 
   if (statusCode === 201) {
     if (showProgress) {
-      log(`${logSymbols.success} Scan requested successfully`)
+      log(i18n.__('scanRequestedSuccessfully', { icon: logSymbols.success }))
     }
 
     return body?.data?.scanId
@@ -45,11 +44,10 @@ const sendScanPostRequest = async (
   let description = ''
   switch (errorCode) {
     case 'not_supported_runtime':
-      description = i18n.__(
-        errorCode,
-        data?.runtime,
-        data?.supportedRuntimes.sort().join(' | ')
-      )
+      description = i18n.__(errorCode, {
+        runtime: data?.runtime,
+        supportedRuntimes: data?.supportedRuntimes.sort().join(' | ')
+      })
       errorCode = false
       break
   }
@@ -88,8 +86,12 @@ const requestScanFunctionPost = async (
   const lambdaClient = getLambdaClient(lambdaOptions)
 
   if (!jsonOutput) {
-    // prettier-ignore
-    log(`${logSymbols.success} Fetching configuration and policies for Lambda Function ${chalk.bold(functionName)}`)
+    log(
+      i18n.__('fetchingConfiguration', {
+        icon: logSymbols.success,
+        functionName: chalk.bold(functionName)
+      })
+    )
   }
 
   const lambdaConfig = await getLambdaFunctionConfiguration(
@@ -125,7 +127,7 @@ const requestScanFunctionPost = async (
   }
 
   if (verbose) {
-    log(`${logSymbols.success} Fetched configuration from AWS:`)
+    log(i18n.__('fetchedConfiguration', { icon: logSymbols.success }))
     prettyPrintJson(functionEvent)
   }
 

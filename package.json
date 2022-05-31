@@ -1,16 +1,12 @@
 {
   "name": "@contrast/contrast",
-  "description": "Contrast CLI",
-  "version": "1.0.0",
-  "author": {
-    "name": "Jamie Mcgurk",
-    "email": "jamie.mcgurk@contrastsecurity.com"
-  },
+  "version": "1.0.3",
+  "description": "Contrast Security's command line tool",
   "main": "dist/index.js",
   "bin": {
-    "contrast": "bin/contrast.js"
+    "contrast": "./bin/contrast.js"
   },
-  "bundleDependencies": false,
+  "author": "Jamie Mcgurk <jamie.mcgurk@contrastsecurity.com>",
   "contributors": [
     {
       "name": "Chris Dunne",
@@ -21,24 +17,89 @@
       "email": "andrew.shanks@contrastsecurity.com"
     }
   ],
-  "license": "MIT",
-  "deprecated": false,
+  "license": "ISC",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --testPathIgnorePatterns=./test-integration/",
+    "test-int": "jest ./test-integration/",
+    "test-int-scan": "jest ./test-integration/scan",
+    "test-int-audit": "jest ./test-integration/audit",
+    "format": "prettier --write \"**/*.{ts,tsx,js,css,scss,json,md,yml}\" .eslintrc.* .babelrc",
+    "check-format": "prettier --check \"**/*.{ts,tsx,js,css,scss,json,md,yml}\" .eslintrc.* .babelrc",
+    "coverage-local": "nyc --reporter=text mocha './test/**/*.spec.js'",
+    "coverage": "yarn test --coverage",
+    "lint": "eslint --config .eslintrc.json . --ext .ts",
+    "extract-licenses": "node scripts/extract-licenses",
+    "test-jest": "jest",
+    "lambda-dev": "npx ts-node src/index.ts lambda",
+    "dev": "npx ts-node src/index.ts"
+  },
   "engines": {
     "node": ">=16.13.2 <17"
+  },
+  "dependencies": {
+    "@aws-sdk/client-iam": "^3.78.0",
+    "@aws-sdk/client-lambda": "^3.78.0",
+    "@types/semver": "^7.3.9",
+    "@yarnpkg/lockfile": "^1.1.0",
+    "bluebird": "^3.7.2",
+    "boxen": "5.1.2",
+    "chalk": "4.1.2",
+    "command-line-args": "^5.2.1",
+    "command-line-usage": "^6.1.3",
+    "conf": "^10.1.2",
+    "dotenv": "^16.0.0",
+    "fast-glob": "^3.2.11",
+    "i18n": "^0.14.2",
+    "js-yaml": "^4.1.0",
+    "latest-version": "5.1.0",
+    "lodash": "^4.17.21",
+    "log-symbols": "^4.1.0",
+    "open": "^8.4.0",
+    "ora": "5.4.1",
+    "prettyjson": "^1.2.5",
+    "request": "^2.88.2",
+    "semver": "^7.3.7",
+    "string-builder": "^0.1.8",
+    "string-multiple-replace": "^1.0.5",
+    "tmp": "^0.2.1",
+    "xml2js": "^0.4.23",
+    "yarn-lockfile": "^1.1.1"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.2",
+    "@types/command-line-args": "^5.2.0",
+    "@types/command-line-usage": "^5.0.2",
+    "@types/i18n": "^0.13.2",
+    "@types/jest": "^27.4.1",
+    "@types/lodash": "^4.14.182",
+    "@typescript-eslint/eslint-plugin": "^5.21.0",
+    "@typescript-eslint/parser": "^5.21.0",
+    "csv-writer": "^1.6.0",
+    "eslint": "^8.14.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^3.1.0",
+    "jest": "^27.5.1",
+    "jest-junit": "^13.2.0",
+    "mocha": "^9.2.2",
+    "npm-license-crawler": "^0.2.1",
+    "nyc": "^15.1.0",
+    "pkg": "^5.6.0",
+    "prettier": "^1.19.1",
+    "tmp": "^0.2.1",
+    "ts-jest": "^27.1.4",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3",
+    "uuid": "^8.3.2"
+  },
+  "resolutions": {
+    "faker": "5.5.3",
+    "colors": "1.4.0"
   },
   "eslintIgnore": [
     "node_modules"
   ],
-  "pkg": {
-    "scripts": [
-      "dist/**/*.js",
-      "bin/contrast"
-    ],
-    "assets": [
-      "dist"
-    ],
-    "outputPath": "binaries"
-  },
   "prettier": {
     "semi": false,
     "singleQuote": true,
@@ -54,76 +115,14 @@
       }
     ]
   },
-  "resolutions": {
-    "faker": "5.5.3",
-    "colors": "1.4.0"
-  },
-  "scripts": {
-    "build": "tsc",
-    "check-format": "prettier --check \"**/*.{ts,tsx,js,css,scss,json,md,yml}\" .eslintrc.* .babelrc",
-    "coverage": "yarn test --coverage",
-    "coverage-local": "nyc --reporter=text mocha './test/**/*.spec.js'",
-    "dev": "npx ts-node src/index.ts",
-    "extract-licenses": "node scripts/extract-licenses",
-    "format": "prettier --write \"**/*.{ts,tsx,js,css,scss,json,md,yml}\" .eslintrc.* .babelrc",
-    "lambda-dev": "npx ts-node src/index.ts lambda",
-    "lint": "eslint --config .eslintrc.json . --ext .ts",
-    "test": "jest --testPathIgnorePatterns=./test-integration/",
-    "test-int": "jest ./test-integration/scan/",
-    "test-jest": "jest",
-    "pkg": "pkg ."
-  },
-  "dependencies": {
-    "@aws-sdk/client-iam": "^3.53.0",
-    "@aws-sdk/client-lambda": "^3.53.0",
-    "@yarnpkg/lockfile": "^1.1.0",
-    "adm-zip": "^0.5.9",
-    "bluebird": "^3.7.2",
-    "chalk": "^4.1.2",
-    "command-line-args": "^5.2.1",
-    "command-line-usage": "^6.1.1",
-    "conf": "^10.1.1",
-    "dotenv": "^16.0.0",
-    "fast-glob": "^3.2.11",
-    "i18n": "^0.14.1",
-    "js-yaml": "^4.1.0",
-    "lodash": "^4.17.21",
-    "log-symbols": "^4.1.0",
-    "open": "^8.4.0",
-    "ora": "5.4.1",
-    "prettyjson": "^1.2.5",
-    "request": "^2.88.2",
-    "semver": "^7.3.5",
-    "string-builder": "^0.1.8",
-    "string-multiple-replace": "^1.0.5",
-    "tmp": "^0.2.1",
-    "xml2js": "^0.4.23",
-    "yarn-lockfile": "^1.1.1"
-  },
-  "devDependencies": {
-    "@tsconfig/node16": "^1.0.2",
-    "@types/command-line-args": "^5.2.0",
-    "@types/command-line-usage": "^5.0.2",
-    "@types/i18n": "^0.13.2",
-    "@types/jest": "^27.4.1",
-    "@types/lodash": "^4.14.181",
-    "@typescript-eslint/eslint-plugin": "^5.13.0",
-    "@typescript-eslint/parser": "^5.13.0",
-    "csv-writer": "^1.6.0",
-    "eslint": "^8.8.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "husky": "^3.0.9",
-    "jest": "^27.4.7",
-    "mocha": "^9.2.1",
-    "npm-license-crawler": "^0.2.1",
-    "nyc": "^15.1.0",
-    "pkg": "^5.5.2",
-    "prettier": "^1.19.1",
-    "tmp": "^0.2.1",
-    "ts-jest": "^27.1.3",
-    "ts-node": "^10.7.0",
-    "typescript": "^4.6.2",
-    "uuid": "^8.3.2"
+  "pkg": {
+    "scripts": [
+      "dist/**/*.js",
+      "bin/contrast"
+    ],
+    "assets": [
+      "dist"
+    ],
+    "outputPath": "binaries"
   }
 }

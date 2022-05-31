@@ -1,7 +1,8 @@
 const commonApi = require('../utils/commonApi')
 const requestUtils = require('../../src/utils/requestUtils')
-const i18n = require('i18n')
 const oraFunctions = require('../utils/oraWrapper')
+const _ = require('lodash')
+const i18n = require('i18n')
 
 const getScanId = async (config, codeArtifactId, client) => {
   return client
@@ -36,27 +37,39 @@ const returnScanResults = async (
   let scanId = await getScanId(config, codeArtifactId, client)
   let startTime = new Date()
   let complete = false
-  while (!complete) {
-    let result = await pollScanResults(config, scanId, client)
-    if (JSON.stringify(result.statusCode) == 200) {
-      if (result.body.status === 'COMPLETED') {
-        complete = true
-        return result.body
+  if (!_.isNil(scanId)) {
+    while (!complete) {
+      let result = await pollScanResults(config, scanId, client)
+      if (JSON.stringify(result.statusCode) == 200) {
+        if (result.body.status === 'COMPLETED') {
+          complete = true
+          return result.body
+        }
+        if (result.body.status === 'FAILED') {
+          complete = true
+          oraFunctions.failSpinner(startScanSpinner, 'Contrast Scan Failed.')
+          console.log(result.body.errorMessage)
+          if (
+            result.body.errorMessage ===
+            'Unable to determine language for code artifact'
+          ) {
+            console.log(
+              'Try scanning again using --language param. ',
+              i18n.__('scanOptionsLanguageSummary')
+            )
+          }
+          process.exit(1)
+        }
       }
-      if (result.body.status === 'FAILED') {
-        complete = true
-        oraFunctions.failSpinner(startScanSpinner, 'Contrast Scan Failed.')
+      let endTime = new Date() - startTime
+      if (requestUtils.millisToSeconds(endTime) > timeout) {
+        oraFunctions.failSpinner(
+          startScanSpinner,
+          'Contrast Scan timed out at the specified ' + timeout + ' seconds.'
+        )
+        console.log('Please try again, allowing more time.')
         process.exit(1)
       }
-    }
-    let endTime = new Date() - startTime
-    if (requestUtils.millisToSeconds(endTime) > timeout) {
-      oraFunctions.failSpinner(
-        startScanSpinner,
-        'Contrast Scan timed out at the specified ' + timeout + ' seconds.'
-      )
-      console.log('Please try again, allowing more time.')
-      process.exit(1)
     }
   }
 }

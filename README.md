@@ -1,108 +1,146 @@
-# Contrast CLI
+# CodeSec by Contrast Security
 
-Scan your AWS Lambda functions and ensure security for policy permissions, dependencies and your code.
+CodeSec delivers:
 
-This initial release supports both Java and Python functions.
+- The fastest and most accurate SAST scanner.
+- Immediate and actionable results — scan code and serverless environments.
+- A frictionless and seamless sign-in process with GitHub or Google Account. From start to finish in minutes.
+- By running a scan on your lambda functions, you can find: Least privilege identity and access management (IAM) vulnerabilities (over permissive policies) and remediation.
 
-## Getting Started
+## Install
 
-### Download
-
-You can install using [NPM](https://npmjs.com):
-
-```shell
+```
 npm install -g @contrast/contrast
 ```
 
-[Homebrew](https://brew.sh/):
+## Authenticate
+
+Authenticate by entering contrast auth in the terminal.
+
+In the resulting browser window, log in and authenticate with your GitHub or Google credentials.
+
+## Run a scan
+
+### SAST scan
+
+####Requirements
+Make sure you have the correct file types to scan.
+
+- Upload a .jar or .war file to scan a Java project for analysis
+- Upload a .js or .zip file to scan a JavaScript project for analysis
+- Upload a .exe. or .zip file to scan a .NET c# web forms project
+
+Start scanning
+
+Use the Contrast scan command `contrast scan`
+
+### Lambda function scan
+
+####Requirements
+
+- Currently supports Java and Python functions on AWS.
+  Configure AWS credentials on your local environment by running the commands with your credentials:
 
 ```shell
-brew tap contrastsecurity/tap
-brew install contrast
+export AWS_DEFAULT_REGION=<YOUR_AWS_REGION>
+export AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID>
+export AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
 ```
 
-or download binaries for [Windows](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-windows.zip), [macOS](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-macos.tar.gz) and [Linux](https://github.com/contrastsecurity/contrast/releases/download/v1.0.0/contrast-1.0.0-linux.tar.gz).
+- AWS credentials should be available on your local configure (usually **~/.aws/credentials**). You have an option to run a lambda scan with your aws-profile to pass --profile. You also can export different credentials.
 
+- These permissions are required to gather all required information on an AWS Lambda to use the `contrast lambda` command:
 
-### Prerequisites
+  - Lambda: [GetFunction](https://docs.aws.amazon.com/lambda/latest/dg/API_GetFunction.html) | [GetLayerVersion](https://docs.aws.amazon.com/lambda/latest/dg/API_GetLayerVersion.html)
+  - IAM: [GetRolePolicy](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetRolePolicy.html) | [GetPolicy](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicy.html) | [GetPolicyVersion](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicyVersion.html) | [ListRolePolicies](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListRolePolicies.html) | [ListAttachedRolePolicies](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListAttachedRolePolicies.html)
 
-Make sure your AWS credentials are available. The Contrast CLI can find your credentials in one of the following ways:
+### Start scanning
 
- * Configured in your user profile (usually located at `~/.aws/credentials`)
- * Using the `--profile` argument when running the CLI
- * Using `AWS_DEFAULT_REGION`, `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` environment variables
+Use contrast lambda to scan your AWS Lambda functions.
+`contrast lambda --function-name MyFunctionName --region my-aws-region`
 
-You will also need the following permissions:
+## Contrast commands
 
- * Lambda: [GetFunction](https://docs.aws.amazon.com/lambda/latest/dg/API_GetFunction.html), [GetLayerVersion](https://docs.aws.amazon.com/lambda/latest/dg/API_GetLayerVersion.html)
- * IAM: [GetRolePolicy](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetRolePolicy.html), [GetPolicy](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicy.html), [GetPolicyVersion](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicyVersion.html), [ListRolePolicies](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListRolePolicies.html), [ListAttachedRolePolicies](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListAttachedRolePolicies.html)
+### auth
 
-#### Example AWS Policy
+Authenticate Contrast using your GitHub or Google account. A new browser window will open for login.
 
-```json
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "VisualEditor0",
-            "Effect": "Allow",
-            "Action": [
-                "iam:GetPolicyVersion",
-                "iam:GetPolicy",
-                "lambda:GetLayerVersion",
-                "lambda:GetFunction",
-                "iam:ListAttachedRolePolicies",
-                "iam:ListRolePolicies",
-                "iam:GetRolePolicy"
-            ],
-            "Resource": [
-                "arn:aws:lambda:*:YOUR_ACCOUNT:layer:*:*",
-                "arn:aws:lambda:*:YOUR_ACCOUNT:function:*",
-                "arn:aws:iam::YOUR_ACCOUNT:role/*",
-                "arn:aws:iam::YOUR_ACCOUNT:policy/*"
-            ]
-        }
-    ]
-}
-```
+**Usage:** `contrast auth`
 
-## Running Your First Scan
+### config
 
-### Authenticate with Contrast
+Displays stored credentials.
 
-```
-contrast auth
-```
+**Usage:** `contrast config`
 
-### Scan a Lambda Function
+**Options:**
 
-```
-contrast lambda --function-name <YOUR_FUNCTION_NAME> --region <AWS_REGION>
-```
+- **-c, --clear** - Removes stored credentials.
 
-For more help, use the following command:
+### scan
 
-```
-contrast lambda --help
-```
+Performs a security SAST scan.
 
-## Commands
+**Usage:** `contrast scan [option]`
 
- * `contrast auth` &ndash; Authenticate using your GitHub or Google account
- * `contrast lambda` &ndash; Perform a scan on an AWS Lambda function
- * `contrast config` &ndash; Display your stored credentials
- * `contrast config --clear` &ndash; Remove your stored credentials
- * `contrast version` &ndash; Display the installed version of the Contrast CLI
- * `contrast help` &ndash; Display help
+**Options:**
 
-## Example
+- **contrast scan --file** Path of the file you want to scan. Contrast searches for a .jar, .war .exe or .zip file in the working directory (and 3 folders deep) if a file is not specified.
+  Alias: **--f**
 
-```shell
-contrast lambda --function-name myFunctionName
-contrast lambda -f myFunctionName --region eu-central-1
-contrast lambda -f myFunctionName --region eu-central-1 --profile myDevProfile
-contrast lambda -f myFunctionName -v -j -r eu-central-1 -p myDevProfile
-contrast lambda --function-name myFunctionName --verbose --json-output --region eu-central-1 --profile myDevProfile
-```
+- **contrast scan --name**
+  Contrast project name. If not specified, Contrast creates a project from the name of the file
+  Alias: **–n**
+- **contrast scan --save**
+  Download the results to a Static Analysis Results Interchange Format (SARIF) file.
+  Alias: **-s**
 
-![image](https://user-images.githubusercontent.com/289035/165555050-e9a709c9-f2a9-4edc-a064-8208445238bc.png)
+- **contrast scan --timeout**
+  Time in seconds to wait for the scan to complete. Default value is 300 seconds.
+  Alias: **-t**
+
+### lambda
+
+Name of AWS lambda function to scan.
+
+**Usage:** `contrast lambda --function-name`
+
+**Options:**
+
+- **contrast lambda --function-name --endpoint-url**
+  AWS Endpoint override. Similar to AWS CLI.
+  Alias: **-e**
+
+- **contrast lambda --function-name --region**
+  Region override. Defaults to AWS_DEFAULT_REGION. Similar to AWS CLI.
+  Alias: **-r**
+
+- **contrast lambda --function-name --profile**
+  AWS configuration profile override. Similar to AWS CLI.
+  Alias: **-p**
+
+- **contrast lambda --function-name --json**
+  Return response in JSON (versus default human-readable format).
+  Alias: **-j**
+
+- **contrast lambda -–function-name -–verbose**
+  Returns extended information to the terminal.
+  Alias: **-v**
+
+- **contrast lambda -–function-name --list-functions**
+  Lists all available lambda functions to scan.
+
+- **contrast lambda --function-name -–help**
+  Displays usage guide.
+  Alias: **-h**
+
+### help
+
+Displays usage guide. To list detailed help for any CLI command, add the -h or --help flag to the command.
+**Usage:** `contrast scan --help`
+Alias: **-h**
+
+### version
+
+Displays version of Contrast CLI.
+**Usage:** `contrast version` Alias: **-v**, **--version**
