@@ -3,7 +3,7 @@
 CodeSec delivers:
 
 - The fastest and most accurate SAST scanner.
-- Immediate and actionable results — scan code and serverless environments.
+- Immediate and actionable results—scan code and serverless environments.
 - A frictionless and seamless sign-in process with GitHub or Google Account. From start to finish in minutes.
 - By running a scan on your lambda functions, you can find: Least privilege identity and access management (IAM) vulnerabilities (over permissive policies) and remediation.
 
@@ -15,7 +15,7 @@ npm install -g @contrast/contrast
 
 ## Authenticate
 
-Authenticate by entering contrast auth in the terminal.
+Authenticate by entering `contrast auth` in the terminal.
 
 In the resulting browser window, log in and authenticate with your GitHub or Google credentials.
 
@@ -23,12 +23,12 @@ In the resulting browser window, log in and authenticate with your GitHub or Goo
 
 ### SAST scan
 
-####Requirements
+#### Requirements
 Make sure you have the correct file types to scan.
 
 - Upload a .jar or .war file to scan a Java project for analysis
 - Upload a .js or .zip file to scan a JavaScript project for analysis
-- Upload a .exe. or .zip file to scan a .NET c# web forms project
+- Upload a .exe. or .zip file to scan a .NET C# web forms project
 
 Start scanning
 
@@ -36,7 +36,7 @@ Use the Contrast scan command `contrast scan`
 
 ### Lambda function scan
 
-####Requirements
+#### Requirements
 
 - Currently supports Java and Python functions on AWS.
   Configure AWS credentials on your local environment by running the commands with your credentials:
@@ -47,7 +47,7 @@ export AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID>
 export AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
 ```
 
-- AWS credentials should be available on your local configure (usually **~/.aws/credentials**). You have an option to run a lambda scan with your aws-profile to pass --profile. You also can export different credentials.
+- AWS credentials should be available on your local configure (usually **~/.aws/credentials**). You have an option to run a lambda scan with your aws-profile to pass `--profile`. You also can export different credentials.
 
 - These permissions are required to gather all required information on an AWS Lambda to use the `contrast lambda` command:
 
@@ -75,7 +75,7 @@ Displays stored credentials.
 
 **Options:**
 
-- **-c, --clear** - Removes stored credentials.
+- **-c, --clear** – Removes stored credentials.
 
 ### scan
 
@@ -85,17 +85,17 @@ Performs a security SAST scan.
 
 **Options:**
 
-- **contrast scan --file** Path of the file you want to scan. Contrast searches for a .jar, .war .exe or .zip file in the working directory (and 3 folders deep) if a file is not specified.
+- **contrast scan --file** – Path of the file you want to scan. Contrast searches for a .jar, .war .exe or .zip file in the working directory (and 3 folders deep) if a file is not specified.
   Alias: **--f**
 
-- **contrast scan --name**
+- **contrast scan --name** – 
   Contrast project name. If not specified, Contrast creates a project from the name of the file
   Alias: **–n**
-- **contrast scan --save**
+- **contrast scan --save** – 
   Download the results to a Static Analysis Results Interchange Format (SARIF) file.
   Alias: **-s**
 
-- **contrast scan --timeout**
+- **contrast scan --timeout** – 
   Time in seconds to wait for the scan to complete. Default value is 300 seconds.
   Alias: **-t**
 
@@ -107,36 +107,36 @@ Name of AWS lambda function to scan.
 
 **Options:**
 
-- **contrast lambda --function-name --endpoint-url**
+- **contrast lambda --function-name --endpoint-url** – 
   AWS Endpoint override. Similar to AWS CLI.
   Alias: **-e**
 
-- **contrast lambda --function-name --region**
+- **contrast lambda --function-name --region** – 
   Region override. Defaults to AWS_DEFAULT_REGION. Similar to AWS CLI.
   Alias: **-r**
 
-- **contrast lambda --function-name --profile**
+- **contrast lambda --function-name --profile** – 
   AWS configuration profile override. Similar to AWS CLI.
   Alias: **-p**
 
-- **contrast lambda --function-name --json**
+- **contrast lambda --function-name --json** – 
   Return response in JSON (versus default human-readable format).
   Alias: **-j**
 
-- **contrast lambda -–function-name -–verbose**
+- **contrast lambda -–function-name -–verbose** – 
   Returns extended information to the terminal.
   Alias: **-v**
 
-- **contrast lambda -–function-name --list-functions**
+- **contrast lambda -–function-name --list-functions** – 
   Lists all available lambda functions to scan.
 
-- **contrast lambda --function-name -–help**
+- **contrast lambda --function-name -–help** – 
   Displays usage guide.
   Alias: **-h**
 
 ### help
 
-Displays usage guide. To list detailed help for any CLI command, add the -h or --help flag to the command.
+Displays usage guide. To list detailed help for any CLI command, add the **-h** or **--help** flag to the command.
 **Usage:** `contrast scan --help`
 Alias: **-h**
 
