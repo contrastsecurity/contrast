@@ -3,9 +3,11 @@ const constants = require('../../constants')
 const commandLineUsage = require('command-line-usage')
 const i18n = require('i18n')
 
-const processConfig = (argv, config) => {
+const processConfig = async (argv, config) => {
   try {
-    let configParams = parsedCLIOptions.getCommandLineArgsCustom(
+    let configParams = await parsedCLIOptions.getCommandLineArgsCustom(
+      config,
+      'config',
       argv,
       constants.commandLineDefinitions.configOptionDefinitions
     )

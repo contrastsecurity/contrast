@@ -1,51 +1,80 @@
-const prettyjson = require('prettyjson')
+const commonApi = require('../../utils/commonApi')
+const _ = require('lodash')
+const oraFunctions = require('../../utils/oraWrapper')
 const i18n = require('i18n')
-const { getHttpClient } = require('../../utils/commonApi')
-const { handleResponseErrors } = require('../../common/errorHandling')
-const { APP_VERSION } = require('../../constants/constants')
+const oraWrapper = require('../../utils/oraWrapper')
+const requestUtils = require('../../utils/requestUtils')
+const { performance } = require('perf_hooks')
 
-function displaySnapshotSuccessMessage(config) {
-  console.log(
-    '\n **************************' +
-      i18n.__('successHeader') +
-      '************************** '
-  )
-  console.log('\n' + i18n.__('snapshotSuccessMessage') + '\n')
-  console.log(
-    ` ${config.host}/Contrast/static/ng/index.html#/${config.organizationId}/applications/${config.applicationId}/libs/dependency-tree`
-  )
-  console.log('\n ***********************************************************')
-}
-
-const newSendSnapShot = async (analysis, applicationId) => {
-  const analysisLanguage = analysis.config.language.toLowerCase()
-  const requestBody = {
-    appID: analysis.config.applicationId,
-    cliVersion: APP_VERSION,
-    snapshot: { [analysisLanguage]: analysis[analysisLanguage] }
-  }
-
-  const client = getHttpClient(analysis.config)
-
+const pollSnapshotResults = async (config, snapshotId, client) => {
+  await requestUtils.sleep(5000)
   return client
-    .sendSnapshot(requestBody, analysis.config)
+    .getReportStatusById(config, snapshotId)
     .then(res => {
-      // if (!analysis.config.silent) {
-      //   console.log(prettyjson.render(requestBody))
-      // }
-      if (res.statusCode === 201) {
-        displaySnapshotSuccessMessage(analysis.config)
-        return res.body
-      } else {
-        handleResponseErrors(res, 'snapshot')
-      }
+      return res
     })
     .catch(err => {
       console.log(err)
     })
 }
 
+const getTimeout = config => {
+  if (config.timeout) {
+    return config.timeout
+  } else {
+    if (config.verbose) {
+      console.log('Timeout set to 5 minutes')
+    }
+    return 300
+  }
+}
+
+const pollForSnapshotCompletition = async (
+  config,
+  snapshotId,
+  reportSpinner
+) => {
+  const client = commonApi.getHttpClient(config)
+  const startTime = performance.now()
+  const timeout = getTimeout(config)
+
+  let complete = false
+  if (!_.isNil(snapshotId)) {
+    while (!complete) {
+      let result = await pollSnapshotResults(config, snapshotId, client)
+      if (result.statusCode === 200) {
+        if (result.body.status === 'PROCESSED') {
+          complete = true
+          return result.body
+        }
+        if (result.body.status === 'FAILED') {
+          complete = true
+          if (config.debug) {
+            oraFunctions.failSpinner(
+              reportSpinner,
+              i18n.__('auditNotCompleted')
+            )
+          }
+          console.log(result.body.errorMessage)
+          oraWrapper.stopSpinner(reportSpinner)
+          console.log('Contrast audit finished')
+          process.exit(1)
+        }
+      }
+      const endTime = performance.now() - startTime
+      if (requestUtils.millisToSeconds(endTime) > timeout) {
+        oraFunctions.failSpinner(
+          reportSpinner,
+          'Contrast audit timed out at the specified timeout of ' +
+            timeout +
+            ' seconds.'
+        )
+        throw new Error('You can update the timeout using --timeout')
+      }
+    }
+  }
+}
+
 module.exports = {
-  newSendSnapShot: newSendSnapShot,
-  displaySnapshotSuccessMessage: displaySnapshotSuccessMessage
+  pollForSnapshotCompletition: pollForSnapshotCompletition
 }

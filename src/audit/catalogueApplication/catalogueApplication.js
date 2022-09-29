@@ -1,22 +1,4 @@
-const i18n = require('i18n')
 const { getHttpClient, handleResponseErrors } = require('../../utils/commonApi')
-
-const locationOfApp = (config, appId) => {
-  return `${config.host}/Contrast/static/ng/index.html#/${config.organizationId}/applications/${appId}`
-}
-
-const displaySuccessMessage = (config, appId) => {
-  console.log(
-    '\n **************************' +
-      i18n.__('successHeader') +
-      '************************** \n'
-  )
-  console.log('\n' + i18n.__('catalogueSuccessCommand') + appId + '\n')
-  console.log(locationOfApp(config, appId))
-  console.log(
-    '\n *********************************************************** \n'
-  )
-}
 
 const catalogueApplication = async config => {
   const client = getHttpClient(config)
@@ -25,8 +7,10 @@ const catalogueApplication = async config => {
     .catalogueCommand(config)
     .then(res => {
       if (res.statusCode === 201) {
-        displaySuccessMessage(config, res.body.application.app_id)
+        //displaySuccessMessage(config, res.body.application.app_id)
         appId = res.body.application.app_id
+      } else if (doesMessagesContainAppId(res)) {
+        appId = tryRetrieveAppIdFromMessages(res.body.messages)
       } else {
         handleResponseErrors(res, 'catalogue')
       }
@@ -37,6 +21,31 @@ const catalogueApplication = async config => {
   return appId
 }
 
+const doesMessagesContainAppId = res => {
+  const regex = /(Application ID =)/
+  if (
+    res.statusCode === 400 &&
+    res.body.messages.filter(message => regex.exec(message))[0]
+  ) {
+    return true
+  }
+
+  return false
+}
+
+const tryRetrieveAppIdFromMessages = messages => {
+  let appId
+  messages.forEach(message => {
+    if (message.includes('Application ID')) {
+      appId = message.split('=')[1].replace(/\s+/g, '')
+    }
+  })
+
+  return appId
+}
+
 module.exports = {
-  catalogueApplication: catalogueApplication
+  catalogueApplication: catalogueApplication,
+  doesMessagesContainAppId,
+  tryRetrieveAppIdFromMessages
 }

@@ -12,18 +12,12 @@ import { requestScanFunctionPost } from './scanRequest'
 import { getScanResults } from './scanResults'
 import { printResults } from './utils'
 import { getAllLambdas, printAvailableLambdas } from './lambdaUtils'
-
-type LambdaOptions = {
-  functionName?: string
-  listFunctions?: boolean
-  region?: string
-  endpointUrl?: string
-  profile?: string
-  help?: boolean
-  verbose?: boolean
-  jsonOutput?: boolean
-  _unknown?: string[]
-}
+import { sleep } from '../utils/requestUtils'
+import ora from '../utils/oraWrapper'
+import { postAnalytics } from './analytics'
+import { LambdaOptions, AnalyticsOption, StatusType, EventType } from './types'
+import { APP_VERSION } from '../constants/constants'
+import chalk from 'chalk'
 
 type ApiParams = {
   organizationId: string
@@ -72,10 +66,21 @@ const getLambdaOptions = (argv: string[]) => {
 }
 
 const processLambda = async (argv: string[]) => {
+  let errorMsg
+  let scanInfo: { functionArn: string; scanId: string } | undefined
+  const commandSessionId = Date.now().toString(36)
   try {
     const lambdaOptions = getLambdaOptions(argv)
     const { help } = lambdaOptions
-
+    const startCommandAnalytics: AnalyticsOption = {
+      arguments: lambdaOptions,
+      sessionId: commandSessionId,
+      eventType: EventType.START,
+      packageVersion: APP_VERSION
+    }
+    postAnalytics(startCommandAnalytics).catch((error: Error) => {
+      /* ignore */
+    })
     if (help) {
       return handleLambdaHelp()
     }
@@ -85,21 +90,43 @@ const processLambda = async (argv: string[]) => {
     if (lambdaOptions.listFunctions) {
       await getAvailableFunctions(lambdaOptions)
     } else {
-      await actualProcessLambda(lambdaOptions)
+      scanInfo = await actualProcessLambda(lambdaOptions)
     }
   } catch (error) {
     if (error instanceof CliError) {
-      console.error(error.getErrorMessage())
+      errorMsg = error.getErrorMessage()
     } else if (error instanceof Error) {
-      console.error(error.message)
+      errorMsg = error.message
     }
-    process.exit(1)
+  } finally {
+    const endCommandAnalytics: AnalyticsOption = {
+      sessionId: commandSessionId,
+      eventType: EventType.END,
+      status: errorMsg ? StatusType.FAILED : StatusType.SUCCESS,
+      packageVersion: APP_VERSION
+    }
+    if (errorMsg) {
+      endCommandAnalytics.errorMsg = errorMsg
+      console.error(errorMsg)
+    }
+    if (scanInfo) {
+      endCommandAnalytics.scanFunctionData = scanInfo
+    }
+    await postAnalytics(endCommandAnalytics).catch((error: Error) => {
+      /* ignore */
+    })
+
+    postRunMessage()
+
+    if (errorMsg) {
+      process.exit(1)
+    }
   }
 }
 
 const getAvailableFunctions = async (lambdaOptions: LambdaOptions) => {
   const lambdas = await getAllLambdas(lambdaOptions)
-  printAvailableLambdas(lambdas, { runtimes: ['python', 'java'] })
+  printAvailableLambdas(lambdas, { runtimes: ['python', 'java', 'node'] })
 }
 
 const actualProcessLambda = async (lambdaOptions: LambdaOptions) => {
@@ -122,6 +149,12 @@ const actualProcessLambda = async (lambdaOptions: LambdaOptions) => {
       description: failedScan.stateReasonText
     })
   }
+
+  // Wait to make sure we will have all the results
+  const startGetherResultsSpinner = ora.returnOra(i18n.__('gatherResults'))
+  ora.startSpinner(startGetherResultsSpinner)
+  await sleep(15 * 1000)
+  ora.succeedSpinner(startGetherResultsSpinner, 'Done gathering results')
 
   const resultsResponse = await getScanResults(
     auth,
@@ -154,6 +187,8 @@ const actualProcessLambda = async (lambdaOptions: LambdaOptions) => {
   if (results?.length) {
     printResults(results)
   }
+
+  return { functionArn, scanId }
 }
 
 const validateRequiredLambdaParams = (options: LambdaOptions) => {
@@ -188,6 +223,14 @@ const validateRequiredLambdaParams = (options: LambdaOptions) => {
 const handleLambdaHelp = () => {
   printHelpMessage()
   process.exit(0)
+}
+
+const postRunMessage = () => {
+  console.log('\n' + chalk.underline.bold('Other Codesec Features:'))
+  console.log("'contrast scan' to run CodeSec’s industry leading SAST scanner")
+  console.log(
+    "'contrast audit' to find vulnerabilities in your open source dependencies\n"
+  )
 }
 
 export { processLambda, LambdaOptions, ApiParams, getAvailableFunctions }

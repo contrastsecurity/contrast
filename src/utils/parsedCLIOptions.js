@@ -1,6 +1,12 @@
 const commandLineArgs = require('command-line-args')
+const { sendTelemetryConfigAsConfObj } = require('../telemetry/telemetry')
 
-const getCommandLineArgsCustom = (parameterList, optionDefinitions) => {
+const getCommandLineArgsCustom = async (
+  contrastConf,
+  command,
+  parameterList,
+  optionDefinitions
+) => {
   try {
     return commandLineArgs(optionDefinitions, {
       argv: parameterList,
@@ -9,6 +15,13 @@ const getCommandLineArgsCustom = (parameterList, optionDefinitions) => {
       caseInsensitive: true
     })
   } catch (e) {
+    await sendTelemetryConfigAsConfObj(
+      contrastConf,
+      command,
+      parameterList,
+      'FAILURE',
+      'undefined'
+    )
     console.log(e.message.toString())
     process.exit(1)
   }

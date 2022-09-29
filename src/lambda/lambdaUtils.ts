@@ -11,7 +11,7 @@ import ora from '../utils/oraWrapper'
 import { LambdaOptions } from './lambda'
 import { log, getReadableFileSize } from './logUtils'
 
-type RuntimeLanguage = 'java' | 'python'
+type RuntimeLanguage = 'java' | 'python' | 'node'
 
 type FilterLambdas = {
   runtimes: RuntimeLanguage[]

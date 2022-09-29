@@ -12,7 +12,7 @@ CodeSec delivers:
 NPM:
 
 ```
-npm install -g @contrast/contrast
+npm install --location=global @contrast/contrast
 ```
 
 Homebrew:
@@ -41,7 +41,8 @@ In the resulting browser window, log in and authenticate with your GitHub or Goo
 
 ### SAST scan
 
-####Requirements
+#### Requirements
+
 Make sure you have the correct file types to scan.
 
 - Upload a .jar or .war file to scan a Java project for analysis
@@ -54,7 +55,7 @@ Use the Contrast scan command `contrast scan`
 
 ### Lambda function scan
 
-####Requirements
+#### Requirements
 
 - Currently supports Java and Python functions on AWS.
   Configure AWS credentials on your local environment by running the commands with your credentials:
@@ -103,19 +104,24 @@ Performs a security SAST scan.
 
 **Options:**
 
-- **contrast scan --file** Path of the file you want to scan. Contrast searches for a .jar, .war, .js. or .zip file in the working directory if a file is not specified.
-  Alias: **--f**
+- **contrast scan --file**
+
+  - Path of the file you want to scan. Contrast searches for a .jar, .war, .js. or .zip file in the working directory if a file is not specified.
+  - Alias: **--f**
 
 - **contrast scan --name**
-  Contrast project name. If not specified, Contrast uses contrast.settings to identify the project or creates a project.
-  Alias: **–n**
+
+  - Contrast project name. If not specified, Contrast uses contrast.settings to identify the project or creates a project.
+  - Alias: **–n**
+
 - **contrast scan --save**
-  Download the results to a Static Analysis Results Interchange Format (SARIF) file.
-  Alias: **-s**
+
+  - Download the results to a Static Analysis Results Interchange Format (SARIF) file. The file is downloaded to the current working directory with a default name of results.sarif. You can view the file with any text editor.
+  - Alias: **-s**
 
 - **contrast scan --timeout**
-  Time in seconds to wait for the scan to complete. Default value is 300 seconds.
-  Alias: **-t**
+  - Time in seconds to wait for the scan to complete. Default value is 300 seconds.
+  - Alias: **-t**
 
 ### lambda
 

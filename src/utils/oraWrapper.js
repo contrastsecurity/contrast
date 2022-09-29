@@ -8,6 +8,10 @@ const startSpinner = spinner => {
   spinner.start()
 }
 
+const stopSpinner = spinner => {
+  spinner.stop()
+}
+
 const succeedSpinner = (spinner, text) => {
   spinner.succeed(text)
 }
@@ -20,5 +24,6 @@ module.exports = {
   returnOra,
   startSpinner,
   succeedSpinner,
-  failSpinner
+  failSpinner,
+  stopSpinner
 }

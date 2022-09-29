@@ -4,7 +4,8 @@ const {
   unauthenticatedError,
   forbiddenError,
   proxyError,
-  genericError
+  genericError,
+  maxAppError
 } = require('../common/errorHandling')
 
 const handleResponseErrors = (res, api) => {
@@ -16,8 +17,10 @@ const handleResponseErrors = (res, api) => {
     forbiddenError()
   } else if (res.statusCode === 407) {
     proxyError()
+  } else if (res.statusCode === 412) {
+    maxAppError()
   } else {
-    genericError()
+    genericError(res)
   }
 }
 

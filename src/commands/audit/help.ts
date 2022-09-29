@@ -1,6 +1,7 @@
 import commandLineUsage from 'command-line-usage'
 import i18n from 'i18n'
 import constants from '../../constants'
+import { commonHelpLinks } from '../../common/commonHelp'
 
 const auditUsageGuide = commandLineUsage([
   {
@@ -13,36 +14,43 @@ const auditUsageGuide = commandLineUsage([
       '{bold ' +
         i18n.__('constantsAuditPrerequisitesContentSupportedLanguages') +
         '}',
-      '{bold ' +
-        i18n.__('constantsAuditPrerequisitesContentJava') +
-        '}' +
-        i18n.__('constantsAuditPrerequisitesContentMessage'),
-      '',
-      '{italic ' + i18n.__('constantsJavaNote') + '}',
-      '{italic ' + i18n.__('constantsJavaNoteGradle') + '}',
-      '',
-      '{bold ' +
-        i18n.__('constantsAuditPrerequisitesContentDotNet') +
-        '}' +
-        i18n.__('constantsAuditPrerequisitesContentDotNetMessage'),
-      '{bold ' +
-        i18n.__('constantsAuditPrerequisitesContentLanguageNode') +
-        '}' +
-        i18n.__('constantsAuditPrerequisitesContentLanguageNodeMessage'),
-      '{bold ' +
-        i18n.__('constantsAuditPrerequisitesContentLanguageRuby') +
-        '}' +
-        i18n.__('constantsAuditPrerequisitesContentLanguageRubyMessage'),
-      '{bold ' +
-        i18n.__('constantsAuditPrerequisitesContentLanguagePython') +
-        '}' +
-        i18n.__('constantsAuditPrerequisitesContentLanguagePythonMessage')
+      i18n.__('constantsAuditPrerequisitesJavaContentMessage'),
+      i18n.__('constantsAuditPrerequisitesContentDotNetMessage'),
+      i18n.__('constantsAuditPrerequisitesContentNodeMessage'),
+      i18n.__('constantsAuditPrerequisitesContentRubyMessage'),
+      i18n.__('constantsAuditPrerequisitesContentPythonMessage'),
+      i18n.__('constantsAuditPrerequisitesContentGoMessage'),
+      i18n.__('constantsAuditPrerequisitesContentPHPMessage')
     ]
   },
   {
     header: i18n.__('constantsAuditOptions'),
-    optionList: constants.commandLineDefinitions.auditOptionDefinitions
-  }
+    optionList: constants.commandLineDefinitions.auditOptionDefinitions,
+    hide: [
+      'application-id',
+      'application-name',
+      'organization-id',
+      'api-key',
+      'authorization',
+      'host',
+      'proxy',
+      'help',
+      'ff',
+      'ignore-cert-errors',
+      'verbose',
+      'debug',
+      'experimental',
+      'tags',
+      'sub-project',
+      'code',
+      'maven-settings-path',
+      'language',
+      'experimental',
+      'app-groups',
+      'metadata'
+    ]
+  },
+  commonHelpLinks()
 ])
 
 export { auditUsageGuide }

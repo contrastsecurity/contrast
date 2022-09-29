@@ -1,4 +1,5 @@
 import Conf from 'conf'
+import { CE_URL } from '../constants/constants'
 
 type ContrastConfOptions = Partial<{
   version: string
@@ -18,14 +19,9 @@ const localConfig = (name: string, version: string) => {
   config.set('version', version)
 
   if (!config.has('host')) {
-    config.set('host', 'https://ce.contrastsecurity.com/')
+    config.set('host', CE_URL)
   }
   return config
-}
-
-const createConfigFromYaml = (yamlPath: string) => {
-  const yamlConfig = {}
-  return yamlConfig
 }
 
 const setConfigValues = (config: ContrastConf, values: ContrastConfOptions) => {
@@ -35,10 +31,4 @@ const setConfigValues = (config: ContrastConf, values: ContrastConfOptions) => {
   values.host ? config.set('host', values.host) : null
 }
 
-export {
-  localConfig,
-  createConfigFromYaml,
-  setConfigValues,
-  ContrastConf,
-  ContrastConfOptions
-}
+export { localConfig, setConfigValues, ContrastConf, ContrastConfOptions }

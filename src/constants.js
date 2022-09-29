@@ -1,6 +1,8 @@
 const commandLineUsage = require('command-line-usage')
 const i18n = require('i18n')
 const { en_locales } = require('./constants/locales.js')
+const { parseSeverity } = require('./common/fail')
+const { commonHelpLinks } = require('./common/commonHelp')
 
 i18n.configure({
   staticCatalog: {
@@ -46,6 +48,14 @@ const scanOptionDefinitions = [
       i18n.__('constantsOptional') +
       '}: ' +
       i18n.__('constantsProjectId')
+  },
+  {
+    name: 'project-path',
+    description:
+      '{bold ' +
+      i18n.__('constantsOptional') +
+      '}: ' +
+      i18n.__('constantsProjectPath')
   },
   {
     name: 'timeout',
@@ -99,6 +109,24 @@ const scanOptionDefinitions = [
       i18n.__('constantsProxyServer')
   },
   {
+    name: 'fail',
+    type: Boolean,
+    description:
+      '{bold ' +
+      i18n.__('constantsOptional') +
+      '}: ' +
+      i18n.__('failOptionMessage')
+  },
+  {
+    name: 'severity',
+    type: severity => parseSeverity(severity),
+    description:
+      '{bold ' +
+      i18n.__('constantsOptional') +
+      '}: ' +
+      i18n.__('constantsSeverity')
+  },
+  {
     name: 'ff',
     type: Boolean,
     description:
@@ -133,6 +161,11 @@ const scanOptionDefinitions = [
       '{bold ' + i18n.__('constantsOptional') + '}:' + i18n.__('constantsSave')
   },
   {
+    name: 'label',
+    description:
+      '{bold ' + i18n.__('constantsOptional') + '}:' + i18n.__('scanLabel')
+  },
+  {
     name: 'help',
     alias: 'h',
     type: Boolean
@@ -141,6 +174,19 @@ const scanOptionDefinitions = [
     name: 'debug',
     alias: 'd',
     type: Boolean
+  },
+  {
+    name: 'experimental',
+    alias: 'e',
+    type: Boolean
+  },
+  {
+    name: 'application-name',
+    description:
+      '{bold ' +
+      i18n.__('constantsOptional') +
+      '}: ' +
+      i18n.__('constantsApplicationName')
   }
 ]
 
@@ -185,13 +231,32 @@ const auditOptionDefinitions = [
       i18n.__('constantsApplicationName')
   },
   {
-    name: 'project-path',
-    defaultValue: process.env.PWD,
+    name: 'file',
+    alias: 'f',
+    defaultValue: process.cwd().concat('/'),
     description:
       '{bold ' +
       i18n.__('constantsOptional') +
       '}: ' +
-      i18n.__('constantsProjectPath')
+      i18n.__('constantsFilePath')
+  },
+  {
+    name: 'fail',
+    type: Boolean,
+    description:
+      '{bold ' +
+      i18n.__('constantsOptional') +
+      '}: ' +
+      i18n.__('failOptionMessage')
+  },
+  {
+    name: 'severity',
+    type: severity => parseSeverity(severity),
+    description:
+      '{bold ' +
+      i18n.__('constantsOptional') +
+      '}: ' +
+      i18n.__('constantsSeverity')
   },
   {
     name: 'app-groups',
@@ -230,6 +295,7 @@ const auditOptionDefinitions = [
   {
     name: 'ignore-dev',
     type: Boolean,
+    alias: 'i',
     description:
       '{bold ' +
       i18n.__('constantsOptional') +
@@ -238,15 +304,6 @@ const auditOptionDefinitions = [
   },
   {
     name: 'maven-settings-path'
-  },
-  {
-    name: 'language',
-    alias: 'l',
-    description:
-      '{bold ' +
-      i18n.__('constantsRequiredCatalogue') +
-      '}: ' +
-      i18n.__('constantsLanguage')
   },
   {
     name: 'organization-id',
@@ -275,7 +332,6 @@ const auditOptionDefinitions = [
   },
   {
     name: 'host',
-    alias: 'h',
     description:
       '{bold ' +
       i18n.__('constantsRequired') +
@@ -306,14 +362,38 @@ const auditOptionDefinitions = [
       '{bold ' +
       i18n.__('constantsOptional') +
       '}: ' +
-      i18n.__('auditOptionsSaveDescription')
+      i18n.__('auditOptionsSaveDescription') +
+      i18n.__('auditOptionsSaveOptionsDescription')
+  },
+  {
+    name: 'experimental',
+    alias: 'e',
+    type: Boolean
+  },
+  {
+    name: 'timeout',
+    alias: 't',
+    type: Number,
+    description:
+      '{bold ' +
+      i18n.__('constantsOptional') +
+      '}: ' +
+      i18n.__('scanOptionsTimeoutSummary')
+  },
+  {
+    name: 'help',
+    alias: 'h',
+    type: Boolean
   }
 ]
 
 const mainUsageGuide = commandLineUsage([
   {
     header: i18n.__('constantsHeader'),
-    content: [i18n.__('constantsContrastContent')]
+    content: [
+      i18n.__('constantsContrastContent'),
+      i18n.__('constantsContrastCategories')
+    ]
   },
   {
     header: i18n.__('constantsUsage'),
@@ -325,14 +405,19 @@ const mainUsageGuide = commandLineUsage([
       { name: i18n.__('authName'), summary: i18n.__('helpAuthSummary') },
       { name: i18n.__('scanName'), summary: i18n.__('helpScanSummary') },
       { name: i18n.__('lambdaName'), summary: i18n.__('helpLambdaSummary') },
+      { name: i18n.__('auditName'), summary: i18n.__('helpAuditSummary') },
       { name: i18n.__('versionName'), summary: i18n.__('helpVersionSummary') },
       { name: i18n.__('configName'), summary: i18n.__('helpConfigSummary') },
       { name: i18n.__('helpName'), summary: i18n.__('helpSummary') }
     ]
   },
   {
-    content: '{underline https://www.contrastsecurity.com}'
-  }
+    header: i18n.__('configHeader2'),
+    content: [
+      { name: i18n.__('clearHeader'), summary: i18n.__('clearContent') }
+    ]
+  },
+  commonHelpLinks()
 ])
 
 const mainDefinition = [{ name: 'command', defaultOption: true }]

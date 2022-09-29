@@ -2,7 +2,8 @@ const i18n = require('i18n')
 const {
   returnOra,
   startSpinner,
-  succeedSpinner
+  succeedSpinner,
+  stopSpinner
 } = require('../utils/oraWrapper')
 const populateProjectIdAndProjectName = require('./populateProjectIdAndProjectName')
 const scan = require('./scan')
@@ -28,6 +29,11 @@ const fileAndLanguageLogic = async configToUse => {
       console.log(i18n.__('fileNotExist'))
       process.exit(1)
     }
+
+    if (fileFunctions.fileIsEmpty(configToUse.file)) {
+      console.log(i18n.__('scanFileIsEmpty'))
+      process.exit(1)
+    }
     return configToUse
   } else {
     if (configToUse.file === undefined || configToUse.file === null) {
@@ -40,10 +46,15 @@ const startScan = async configToUse => {
   const startTime = performance.now()
   await fileAndLanguageLogic(configToUse)
 
+  let newProject
+
   if (!configToUse.projectId) {
-    configToUse.projectId = await populateProjectIdAndProjectName.populateProjectId(
-      configToUse
-    )
+    const { projectId, isNewProject } =
+      await populateProjectIdAndProjectName.populateProjectId(configToUse)
+    configToUse.projectId = projectId
+    newProject = isNewProject
+  } else {
+    newProject = false
   }
   const codeArtifactId = await scan.sendScan(configToUse)
 
@@ -53,21 +64,32 @@ const startScan = async configToUse => {
     const scanDetail = await scanResults.returnScanResults(
       configToUse,
       codeArtifactId,
+      newProject,
       getTimeout(configToUse),
       startScanSpinner
     )
+
     const scanResultsInstances = await scanResults.returnScanResultsInstances(
       configToUse,
       scanDetail.id
     )
+
     const endTime = performance.now()
     const scanDurationMs = endTime - startTime
-    succeedSpinner(startScanSpinner, 'Contrast Scan complete')
-    console.log(
-      `----- Scan completed in ${(scanDurationMs / 1000).toFixed(2)}s -----`
-    )
-    const projectOverview = await scanResults.returnScanProjectById(configToUse)
-    return { projectOverview, scanDetail, scanResultsInstances }
+    if (scanResultsInstances.statusCode !== 200) {
+      stopSpinner(startScanSpinner)
+      console.log('Result Service is unavailable, please try again later')
+      process.exit(1)
+    } else {
+      succeedSpinner(startScanSpinner, 'Contrast Scan complete')
+      console.log(
+        `----- Scan completed in ${(scanDurationMs / 1000).toFixed(2)}s -----`
+      )
+      return {
+        scanDetail,
+        scanResultsInstances: scanResultsInstances.body
+      }
+    }
   }
 }
 

@@ -16,7 +16,9 @@ const constants = require('../../constants')
 const commandLineUsage = require('command-line-usage')
 
 const processAuth = async (argv, config) => {
-  let authParams = parsedCLIOptions.getCommandLineArgsCustom(
+  let authParams = await parsedCLIOptions.getCommandLineArgsCustom(
+    config,
+    'auth',
     argv,
     constants.commandLineDefinitions.authOptionDefinitions
   )

@@ -1,5 +1,6 @@
 import commandLineUsage from 'command-line-usage'
 import i18n from 'i18n'
+import { commonHelpLinks } from '../common/commonHelp'
 
 const lambdaUsageGuide = commandLineUsage([
   {
@@ -8,7 +9,15 @@ const lambdaUsageGuide = commandLineUsage([
   },
   {
     header: i18n.__('constantsPrerequisitesHeader'),
-    content: [i18n.__('lambdaPrerequisitesContent')]
+    content: [
+      '{bold ' +
+        i18n.__('lambdaPrerequisitesContentLambdaLanguages') +
+        '}\n\n' +
+        '{bold ' +
+        i18n.__('lambdaPrerequisitesContentLambdaDescriptionTitle') +
+        '}' +
+        i18n.__('lambdaPrerequisitesContentLambdaDescription')
+    ]
   },
   {
     header: i18n.__('constantsUsage'),
@@ -18,49 +27,49 @@ const lambdaUsageGuide = commandLineUsage([
     header: i18n.__('constantsOptions'),
     content: [
       {
-        name: i18n.__('lambdaFunctionNameOption'),
+        name: '{bold ' + i18n.__('lambdaFunctionNameOption') + '}',
         summary: i18n.__('lambdaFunctionNameSummery')
       },
       {
-        name: i18n.__('lambdaListFunctionsOption'),
+        name: '{bold ' + i18n.__('lambdaListFunctionsOption') + '}',
         summary: i18n.__('lambdaListFunctionsSummery')
       },
       {
-        name: i18n.__('lambdaEndpointOption'),
+        name: '{bold ' + i18n.__('lambdaEndpointOption') + '}',
         summary:
-          '{italic ' +
+          '{bold ' +
           i18n.__('constantsOptional') +
           '}: ' +
           i18n.__('lambdaEndpointSummery')
       },
       {
-        name: i18n.__('lambdaRegionOption'),
+        name: '{bold ' + i18n.__('lambdaRegionOption') + '}',
         summary:
-          '{italic ' +
+          '{bold ' +
           i18n.__('constantsOptional') +
           '}: ' +
           i18n.__('lambdaRegionSummery')
       },
       {
-        name: i18n.__('lambdaProfileOption'),
+        name: '{bold ' + i18n.__('lambdaProfileOption') + '}',
         summary:
-          '{italic ' +
+          '{bold ' +
           i18n.__('constantsOptional') +
           '}: ' +
           i18n.__('lambdaProfileSummery')
       },
       {
-        name: i18n.__('lambdaJsonOption'),
+        name: '{bold ' + i18n.__('lambdaJsonOption') + '}',
         summary:
-          '{italic ' +
+          '{bold ' +
           i18n.__('constantsOptional') +
           '}: ' +
           i18n.__('lambdaJsonSummery')
       },
       {
-        name: i18n.__('lambdaVerboseOption'),
+        name: '{bold ' + i18n.__('lambdaVerboseOption') + '}',
         summary:
-          '{italic ' +
+          '{bold ' +
           i18n.__('constantsOptional') +
           '}: ' +
           i18n.__('lambdaVerbosSummery')
@@ -72,9 +81,7 @@ const lambdaUsageGuide = commandLineUsage([
       { name: i18n.__('lambdaHelpOption'), summary: i18n.__('helpSummary') }
     ]
   },
-  {
-    content: '{underline https://www.contrastsecurity.com}'
-  }
+  commonHelpLinks()
 ])
 
 export { lambdaUsageGuide }

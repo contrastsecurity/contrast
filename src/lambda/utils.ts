@@ -19,13 +19,8 @@ class PrintVulnerability {
   whatHappened: string
 
   constructor(index: number, vulnerability: any, group?: any[]) {
-    const {
-      severityText,
-      title,
-      description,
-      remediation,
-      categoryText
-    } = vulnerability
+    const { severityText, title, description, remediation, categoryText } =
+      vulnerability
 
     this.group = group
     this.vulnerability = vulnerability

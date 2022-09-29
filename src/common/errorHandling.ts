@@ -1,5 +1,4 @@
 import i18n from 'i18n'
-import { sortBy } from 'lodash'
 
 const handleResponseErrors = (res: any, api: string) => {
   if (res.statusCode === 400) {
@@ -28,36 +27,19 @@ const libraryAnalysisError = () => {
 }
 
 const snapshotFailureError = () => {
-  console.log(
-    '\n ******************************** ' +
-      i18n.__('snapshotFailureHeader') +
-      ' *********************************\n' +
-      i18n.__('snapshotFailureMessage')
-  )
+  console.log(i18n.__('snapshotFailureMessage'))
 }
 
 const vulnerabilitiesFailureError = () => {
-  console.log(
-    '\n ******************************** ' +
-      i18n.__('snapshotFailureHeader') +
-      ' *********************************\n' +
-      i18n.__('vulnerabilitiesFailureMessage')
-  )
+  console.log(i18n.__('vulnerabilitiesFailureMessage'))
 }
 
 const reportFailureError = () => {
-  console.log(
-    '\n ******************************** ' +
-      i18n.__('snapshotFailureHeader') +
-      ' *********************************\n' +
-      i18n.__('reportFailureMessage')
-  )
+  console.log(i18n.__('auditReportFailureMessage'))
 }
 
-const genericError = (missingCliOption: string) => {
-  // prettier-ignore
-  console.log(`*************************** ${i18n.__('yamlMissingParametersHeader')} ***************************\n${missingCliOption}`)
-  console.error(i18n.__('yamlMissingParametersMessage'))
+const genericError = () => {
+  console.error(i18n.__('genericErrorMessage'))
   process.exit(1)
 }
 
@@ -80,8 +62,12 @@ const proxyError = () => {
   generalError('proxyErrorHeader', 'proxyErrorMessage')
 }
 
-const hostWarningError = () => {
-  console.log(i18n.__('snapshotHostMessage'))
+const maxAppError = () => {
+  generalError(
+    'No applications remaining',
+    'You have reached the maximum number of application you can create.'
+  )
+  process.exit(1)
 }
 
 const failOptionError = () => {
@@ -153,10 +139,13 @@ export {
   forbiddenError,
   proxyError,
   failOptionError,
-  hostWarningError,
   generalError,
   getErrorMessage,
   handleResponseErrors,
   libraryAnalysisError,
-  findCommandOnError
+  findCommandOnError,
+  snapshotFailureError,
+  vulnerabilitiesFailureError,
+  reportFailureError,
+  maxAppError
 }

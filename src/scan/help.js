@@ -1,6 +1,7 @@
 const commandLineUsage = require('command-line-usage')
 const i18n = require('i18n')
 const constants = require('../constants')
+const { commonHelpLinks } = require('../common/commonHelp')
 
 const scanUsageGuide = commandLineUsage([
   {
@@ -30,12 +31,12 @@ const scanUsageGuide = commandLineUsage([
       'ff',
       'ignore-cert-errors',
       'verbose',
-      'debug'
+      'debug',
+      'experimental',
+      'application-name'
     ]
   },
-  {
-    content: '{underline https://www.contrastsecurity.com}'
-  }
+  commonHelpLinks()
 ])
 
 module.exports = {
