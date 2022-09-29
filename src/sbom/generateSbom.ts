@@ -1,9 +1,9 @@
 import { getHttpClient } from '../utils/commonApi'
 
-export default function generateSbom(config: any) {
+export const generateSbom = (config: any, type: string) => {
   const client = getHttpClient(config)
   return client
-    .getSbom(config)
+    .getSbom(config, type)
     .then((res: { statusCode: number; body: any }) => {
       if (res.statusCode === 200) {
         return res.body

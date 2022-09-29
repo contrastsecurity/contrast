@@ -36,11 +36,13 @@ const lambda = {
   loadingFunctionList: 'Loading lambda function list',
   functionsFound: '{{count}} functions found',
   noFunctionsFound: 'No functions found',
-  failedToLoadFunctions: 'Faled to load lambda functions',
+  failedToLoadFunctions: 'Failed to load lambda functions',
   availableForScan: '{{icon}} {{count}} available for scan',
   runtimeCount: '----- {{runtime}} ({{count}}) -----',
 
   // ====== print vulnerabilities ===== //
+  gatherResults: 'Gathering results...',
+  doneGatherResults: 'Done gathering results',
   whatHappenedTitle: 'What happened:',
   whatHappenedItem: '{{policy}} have:\n{{comments}}\n',
   recommendation: 'Recommendation:',

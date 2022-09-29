@@ -10,7 +10,8 @@ type ARN = {
   resourceId?: string
 }
 
-const ARN_REGEX = /arn:(?<partition>[^:\n]*):(?<service>[^:\n]*):(?<region>[^:\n]*):(?<accountId>[^:\n]*):(?<ignore>(?<resource>[^:/\n]*)[:/])?(?<resourceId>.*)/
+const ARN_REGEX =
+  /arn:(?<partition>[^:\n]*):(?<service>[^:\n]*):(?<region>[^:\n]*):(?<accountId>[^:\n]*):(?<ignore>(?<resource>[^:/\n]*)[:/])?(?<resourceId>.*)/
 
 const parseARN = (arn: string | undefined) => {
   if (!arn) {

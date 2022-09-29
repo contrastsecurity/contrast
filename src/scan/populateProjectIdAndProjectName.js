@@ -8,9 +8,11 @@ const populateProjectId = async config => {
     proj = await getExistingProjectIdByName(config, client).then(res => {
       return res
     })
+
+    return { projectId: proj, isNewProject: false }
   }
 
-  return proj
+  return { projectId: proj, isNewProject: true }
 }
 
 const createProjectId = async (config, client) => {
@@ -26,7 +28,11 @@ const createProjectId = async (config, client) => {
         process.exit(1)
         return
       }
-
+      if (res.statusCode === 429) {
+        console.log(i18n.__('exceededFreeTier'))
+        process.exit(1)
+        return
+      }
       if (res.statusCode === 201) {
         console.log(i18n.__('projectCreatedScan'))
         if (config.verbose) {

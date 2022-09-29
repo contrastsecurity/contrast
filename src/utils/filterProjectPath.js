@@ -1,4 +1,5 @@
 const path = require('path')
+const child_process = require('child_process')
 
 function resolveFilePath(filepath) {
   if (filepath[0] === '~') {
@@ -8,10 +9,13 @@ function resolveFilePath(filepath) {
 }
 
 const returnProjectPath = () => {
-  if (process.env.PWD !== (undefined || null || 'undefined')) {
+  if (process.platform == 'win32') {
+    let winPath = child_process.execSync('cd').toString()
+    return winPath.replace(/\//g, '\\').trim()
+  } else if (process.env.PWD !== (undefined || null || 'undefined')) {
     return process.env.PWD
   } else {
-    return process.argv[process.argv.indexOf('--project_path') + 1]
+    return process.argv[process.argv.indexOf('--file') + 1]
   }
 }
 

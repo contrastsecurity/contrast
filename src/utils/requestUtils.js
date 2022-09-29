@@ -15,8 +15,15 @@ const sleep = ms => {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+const timeOutError = (ms, reject) => {
+  return setTimeout(() => {
+    reject(new Error(`No input detected after 30s`))
+  }, ms)
+}
+
 module.exports = {
   sendRequest: sendRequest,
   sleep: sleep,
-  millisToSeconds: millisToSeconds
+  millisToSeconds: millisToSeconds,
+  timeOutError: timeOutError
 }
