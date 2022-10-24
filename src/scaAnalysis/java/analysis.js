@@ -1,7 +1,10 @@
 const child_process = require('child_process')
+const spawn = require('cross-spawn')
 const path = require('path')
 const i18n = require('i18n')
 const fs = require('fs')
+const readLine = require('readline')
+const paramHandler = require('../../utils/paramsUtil/paramHandler')
 
 const MAVEN = 'maven'
 const GRADLE = 'gradle'
@@ -29,20 +32,23 @@ const determineProjectTypeAndCwd = (files, config) => {
 
 const buildMaven = (config, projectData, timeout) => {
   let cmdStdout
-  let mvn_settings = ''
-
   try {
-    // Allow users to provide a custom location for their settings.xml
+    let command = 'mvn'
+    let args = ['dependency:tree', '-B']
     if (config.mavenSettingsPath) {
-      mvn_settings = ' -s ' + config.mavenSettingsPath
+      args.push('-s')
+      args.push(config.mavenSettingsPath)
     }
-    cmdStdout = child_process.execSync(
-      'mvn dependency:tree -B' + mvn_settings,
-      {
+    // Allow users to provide a custom location for their settings.xml
+
+    cmdStdout = spawn
+      .sync(command, args, {
+        env: process.env,
         cwd: projectData.cwd,
         timeout
-      }
-    )
+      })
+      .stdout.toString()
+
     return cmdStdout.toString()
   } catch (err) {
     throw new Error(
@@ -141,7 +147,34 @@ const getJavaBuildDeps = (config, files) => {
   }
 }
 
+const agreementPrompt = async config => {
+  const rl = readLine.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  })
+
+  return new Promise((resolve, reject) => {
+    rl.question('❔ Do you want to continue? Type Y or N', async input => {
+      if (input.toLowerCase() === 'yes' || input.toLowerCase() === 'y') {
+        config.javaAgreement = paramHandler.setAgreement(true)
+        rl.close()
+        resolve(config)
+      } else if (input.toLowerCase() === 'no' || input.toLowerCase() === 'n') {
+        rl.close()
+        resolve(process.exit(1))
+      } else {
+        rl.close()
+        console.log('Invalid Input: Exiting')
+        resolve(process.exit(1))
+      }
+    })
+  }).catch(e => {
+    throw e
+  })
+}
+
 module.exports = {
   getJavaBuildDeps,
-  determineProjectTypeAndCwd
+  determineProjectTypeAndCwd,
+  agreementPrompt
 }

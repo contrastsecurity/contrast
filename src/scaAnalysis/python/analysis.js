@@ -41,7 +41,7 @@ const scaPythonParser = pythonDependencies => {
     )
     pythonParsedDeps[key].group = null
     pythonParsedDeps[key].name = key
-    pythonParsedDeps[key].isProduction = true
+    pythonParsedDeps[key].productionDependency = true
     pythonParsedDeps[key].dependencies = []
     pythonParsedDeps[key].directDependency = true
   }

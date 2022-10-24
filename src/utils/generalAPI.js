@@ -1,6 +1,5 @@
 const { featuresTeamServer } = require('./capabilities')
 const semver = require('semver')
-const { handleResponseErrors } = require('../common/errorHandling')
 const commonApi = require('./commonApi')
 const { isNil } = require('lodash')
 
@@ -12,7 +11,7 @@ const getGlobalProperties = async config => {
       if (res.statusCode === 200) {
         return res.body
       } else {
-        handleResponseErrors(res, 'globalProperties')
+        commonApi.handleResponseErrors(res, 'globalProperties')
       }
     })
     .catch(err => {

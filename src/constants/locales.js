@@ -137,7 +137,7 @@ const en_locales = () => {
     constantsGradleMultiProject:
       'Specify the sub project within your gradle application.',
     constantsScan: 'Upload java binaries to the static scan service',
-    constantsWaitForScan: 'Waits for the result of the scan',
+    constantsDoNotWaitForScan: 'Do not wait for the result of the scan',
     constantsProjectName:
       'Contrast project name. If not specified, Contrast uses contrast.settings to identify the project or creates a project.',
     constantsProjectId:
@@ -201,56 +201,19 @@ const en_locales = () => {
       'After successful auth try the following command: contrast scan -f "<file>"',
     constantsHowToRunDev3:
       'Allowable languages are java (.jar and .war) and javascript (.js or .zip), if the language is not autodetected please use --language to specify',
-    constantsHowToRunContent1:
-      'You can run the tool on the command line and manually add the parameters, or you can put the parameters in a YAML file.',
-    constantsHowToRunContent2:
-      'If you are assessing an application that has not been instrumented by a Contrast agent you must first use the tool to register the application (Catalogue command). This will give you an application ID that you can then use in the Run Command.',
-    constantsHowToRunContent3:
-      'Allowable language values are JAVA, NODE, PYTHON, RUBY and GO.',
-    constantsManualInputHeader: 'Manual Input of Command:',
-    constantsManualInputCatalogue: 'Catalogue Command:',
-    constantsManualInputCatalogueInstruction:
-      'To analyse a new application not already instrumented by Contrast, run the following command:',
-    constantsManualInputCatalogueRun:
-      'After you run this command, you are provided a new application ID in the console. Use this ID in the Run command:',
-    constantsManualInputCatalogueRunTitle: 'Run Command:',
-    constantsManualInputCatalogueRunInstruction:
-      'To analyse an application catalogued by Contrast, run the following command:',
-    constantsYaml: 'Yaml:',
-    constantsYamlRunCommand:
-      'After you catalogue your application go to Run Command above.',
     constantsOptions: 'Options',
-    constantsCatalogueCommand:
-      '%s YourApiKey %s YourAuthorizationKey %s YourOrganizationId %s YourHost %s YourApplicationName %s YourApplicationLanguage',
-    constantsRunCommand:
-      '%s YourApiKey %s YourAuthorizationKey %s YourOrganizationId %s YourHost %s YourApplicationId',
     constantsSpecialCharacterWarning:
       'Please Note: Parameters may need to be quoted to avoid issues with special characters.',
-    yamlCatalogueCommand: '%s PathToYaml',
-    yamlCommand: '%s PathToYaml',
-    agentProxyAndTlsEnabledError:
-      'Please Note: We currently do not support having a proxy server and TLS enabled at the same time.',
-    TlsHeader: 'TLS',
-    TlsBody:
-      'To enable TLS please use the YAML file with the following parameters:',
-    TlsKey: 'key: pathToKey',
-    TlsCert: 'cert: pathToCert',
-    TlsCaCert: 'cacert: pathToCaCert',
+    constantsProxyKey: 'Path to the Certificate Key',
+    constantsProxyCert: 'Path to the Cert file',
+    constantsProxyCaCert: 'Path to the CaCert file',
     goReadProjectFile: 'Failed to read the project file @ "%s" because: "%s"',
-    goAnalysisError: 'GO analysis failed because: ',
-    goParseProjectFile: 'Failed to parse go mod graph output because: ',
-    mavenNotInstalledError:
-      "'mvn' is not available. Please ensure you have Maven installed and available on your path.",
     mavenDependencyTreeNonZero:
-      'Building maven dependancy tree failed with a non 0 exit code',
+      'Building maven dependency tree failed with a non 0 exit code',
     gradleWrapperUnavailable:
       'Gradle wrapper not found in root of project. Please ensure gradlew or gradlew.bat is in root of the project.',
     gradleDependencyTreeNonZero:
-      "Building gradle dependancy tree failed with a non 0 exit code. \n Please check you have the correct version of Java installed to compile your project? \n If running against a muti module project ensure you are using the '--sub-project' flag",
-    yamlPathCamelCaseError:
-      'Warning: The "yamlPath" parameter will be deprecated in a future release. Please look at our documentation for further guidance.',
-    constantsSbom:
-      'Generate the Software Bill of Materials (SBOM) for the given application',
+      "Building gradle dependency tree failed with a non 0 exit code. \n Please check you have the correct version of Java installed to compile your project? \n If running against a muti module project ensure you are using the '--sub-project' flag",
     constantsMetadata:
       'Define a set of key=value pairs (which conforms to RFC 2253) for specifying user-defined metadata associated with the application.',
     constantsTags:
@@ -266,9 +229,7 @@ const en_locales = () => {
       'Excludes developer dependencies from the results. All dependencies are included by default.',
     constantsCommands: 'Commands',
     constantsScanOptions: 'Scan Options',
-    sbomError: 'All required parameters are not present.',
     sbomRetrievalError: 'Unable to retrieve Software Bill of Materials (SBOM)',
-    ignoreDevDep: 'No private libraries that are not scoped detected',
     foundExistingProjectScan: 'Found existing project...',
     projectCreatedScan: 'Project created',
     uploadingScan: 'Uploading file to scan.',
@@ -284,7 +245,6 @@ const en_locales = () => {
     specifyFileAuditNotFound: 'No files found for library analysis',
     populateProjectIdMessage: 'project ID is %s',
     genericServiceError: 'returned with status code %s',
-    projectIdError: 'Your project ID is %s please check this is correct',
     permissionsError:
       'You do not have the correct permissions here. \n Contact support@contrastsecurity.com to get this fixed.',
     scanErrorFileMessage:
@@ -317,6 +277,9 @@ const en_locales = () => {
     scanOptionsFileNameSummary:
       'Path of the file you want to scan. If no file is specified, Contrast searches for a .jar, .war, .exe or .zip file in the working directory.',
     scanOptionsVerboseSummary: ' Returns extended information to the terminal.',
+    auditOptionsTrackSummary: ' Save the results to the UI.',
+    auditOptionsBranchSummary:
+      ' Set the branch name to associate the library results to.',
     authSuccessMessage: 'Authentication successful',
     runAuthSuccessMessage:
       chalk.bold('CodeSec by Contrast') +
@@ -443,6 +406,8 @@ const en_locales = () => {
     auditBadFiletypeSpecifiedForSave: `\n ${chalk.yellow.bold(
       'Bad file type specified for --save option. Use audit --help to see valid --save options.'
     )}`,
+    auditServicesMessageForTS:
+      'View your vulnerable library list or full dependency tree in Contrast:',
     auditReportWaiting: 'Waiting for report...',
     auditReportFail: 'Report Retrieval Failed, please try again',
     auditReportSuccessMessage: 'Report successfully retrieved',
@@ -450,10 +415,14 @@ const en_locales = () => {
     auditSCAAnalysisBegins: 'Contrast SCA audit started',
     auditSCAAnalysisComplete: 'Contrast audit complete',
     commonHelpHeader: 'Need More Help?',
+    commonHelpEnterpriseHeader: 'Existing Contrast user?',
     commonHelpCheckOutHeader: chalk.hex('#9DC184')('Check out:'),
     commonHelpCheckOutText: ' https://support.contrastsecurity.com',
     commonHelpLearnMoreHeader: chalk.hex('#9DC184')('Learn more at:'),
-    commonHelpLearnMoreText: ' https://developer.contrastsecurity.com',
+    commonHelpLearnMoreEnterpriseHeader: chalk.hex('#9DC184')('Read our docs:'),
+    commonHelpLearnMoreText: ' https://www.contrastsecurity.com/developer ',
+    commonHelpLearnMoreEnterpriseText:
+      ' https://docs.contrastsecurity.com/en/run-contrast-cli.html ',
     commonHelpJoinDiscussionHeader: chalk.hex('#9DC184')(
       'Join the discussion:'
     ),

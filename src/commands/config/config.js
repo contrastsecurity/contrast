@@ -1,5 +1,5 @@
 const parsedCLIOptions = require('../../utils/parsedCLIOptions')
-const constants = require('../../constants')
+const constants = require('../../cliConstants')
 const commandLineUsage = require('command-line-usage')
 const i18n = require('i18n')
 

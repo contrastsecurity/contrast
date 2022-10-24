@@ -81,7 +81,8 @@ const lambdaUsageGuide = commandLineUsage([
       { name: i18n.__('lambdaHelpOption'), summary: i18n.__('helpSummary') }
     ]
   },
-  commonHelpLinks()
+  commonHelpLinks()[0],
+  commonHelpLinks()[1]
 ])
 
 export { lambdaUsageGuide }

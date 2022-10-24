@@ -41,7 +41,7 @@ HTTPClient.prototype.maybeAddCertsToRequest = function (config) {
     const caFileContent = fs.readFileSync(caCertFilePath)
     if (caFileContent instanceof Error) {
       throw new Error(
-        `Unable to read CA from config option contrast.api.certificate.ca_file='${caCertFilePath}', msg: ${caFileContent.message}`
+        `Unable to read CA from ${caCertFilePath}, msg: ${caFileContent.message}`
       )
     }
     this.requestOptions.ca = caFileContent
@@ -246,6 +246,13 @@ HTTPClient.prototype.scaServiceReportStatus = function scaServiceReport(
   return requestUtils.sendRequest({ method: 'get', options })
 }
 
+HTTPClient.prototype.scaServiceIngests = function scaServiceIngests(config) {
+  const options = _.cloneDeep(this.requestOptions)
+  let url = createScaServiceIngestsURL(config)
+  options.url = url
+  return requestUtils.sendRequest({ method: 'get', options })
+}
+
 HTTPClient.prototype.getReportById = function getReportById(config, reportId) {
   const options = _.cloneDeep(this.requestOptions)
   if (config.ignoreDev) {
@@ -370,6 +377,12 @@ HTTPClient.prototype.getSbom = function getSbom(config, type) {
   return requestUtils.sendRequest({ method: 'get', options })
 }
 
+HTTPClient.prototype.getSCASbom = function getSbom(config, type, reportId) {
+  const options = _.cloneDeep(this.requestOptions)
+  options.url = createSCASbomUrl(config, type, reportId)
+  return requestUtils.sendRequest({ method: 'get', options })
+}
+
 HTTPClient.prototype.getLatestVersion = function getLatestVersion() {
   const options = _.cloneDeep(this.requestOptions)
   options.url =
@@ -447,15 +460,23 @@ function createSnapshotURL(config) {
 }
 
 function createScaServiceReportURL(config, reportId) {
-  return ``
+  let baseUrl = `${config.host}/Contrast/api/sca/organizations/${config.organizationId}/libraries/applications/${config.applicationId}/reports/${reportId}`
+  baseUrl = config.ignoreDev ? baseUrl.concat('?nodesToInclude=PROD') : baseUrl
+  return baseUrl
 }
 
 function createScaServiceReportStatusURL(config, reportId) {
-  return ``
+  return `${config.host}/Contrast/api/sca/organizations/${config.organizationId}/libraries/ingests/${reportId}/status`
+}
+
+function createScaServiceIngestsURL(config) {
+  return `${config.host}/Contrast/api/sca/organizations/${config.organizationId}/libraries/ingests`
 }
 
 function createScaServiceIngestURL(config) {
-  return ``
+  let baseUrl = `${config.host}/Contrast/api/sca/organizations/${config.organizationId}/libraries/ingests/tree`
+  baseUrl = config.track ? baseUrl.concat('?persist=true') : baseUrl
+  return baseUrl
 }
 
 const createAppCreateURL = config => {
@@ -490,6 +511,10 @@ function createDataUrl() {
 
 function createSbomUrl(config, type) {
   return `${config.host}/Contrast/api/ng/${config.organizationId}/applications/${config.applicationId}/libraries/sbom/${type}`
+}
+
+function createSCASbomUrl(config, type, reportId) {
+  return `${config.host}/Contrast/api/sca/organizations/${config.organizationId}/libraries/applications/${config.applicationId}/sbom/${reportId}?toolType=${type}`
 }
 
 function createTelemetryEventUrl(config) {

@@ -12,7 +12,7 @@ const {
 } = require('../../utils/oraWrapper')
 const { TIMEOUT, AUTH_UI_URL } = require('../../constants/constants')
 const parsedCLIOptions = require('../../utils/parsedCLIOptions')
-const constants = require('../../constants')
+const constants = require('../../cliConstants')
 const commandLineUsage = require('command-line-usage')
 
 const processAuth = async (argv, config) => {

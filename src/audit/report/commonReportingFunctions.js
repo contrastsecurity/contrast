@@ -256,13 +256,7 @@ function buildBody(cveArray, advice) {
 function getIssueRow(cveArray) {
   orderByHighestPriority(cveArray)
   const cveMessagesList = getIssueCveMsgList(cveArray)
-  const cveNumbers = getSeverityCounts(cveArray)
-  const numAndSeverityTypeDesc = getNumOfAndSeverityType(cveNumbers)
-  return [
-    chalk.bold('Issue'),
-    ':',
-    `${numAndSeverityTypeDesc} ${cveMessagesList.join(', ')}`
-  ]
+  return [chalk.bold('Issue'), ':', `${cveMessagesList.join(', ')}`]
 }
 
 function gatherRemediationAdvice(guidance, libraryName, libraryVersion) {
@@ -280,21 +274,6 @@ function gatherRemediationAdvice(guidance, libraryName, libraryVersion) {
 
 function buildFormattedHeaderNum(contrastHeaderNum) {
   return `CONTRAST-${contrastHeaderNum.toString().padStart(3, '0')}`
-}
-
-function getNumOfAndSeverityType(cveNumbers) {
-  const { critical, high, medium, low, note } = cveNumbers
-
-  const criticalMsg = critical > 0 ? `${critical} Critical | ` : ''
-  const highMsg = high > 0 ? `${high} High | ` : ''
-  const mediumMsg = medium > 0 ? `${medium} Medium | ` : ''
-  const lowMsg = low > 0 ? `${low} Low | ` : ''
-  const noteMsg = note > 0 ? `${note} Note` : ''
-
-  //removes/trims whitespace to single spaces
-  return `${criticalMsg} ${highMsg} ${mediumMsg} ${lowMsg} ${noteMsg}`
-    .replace(/\s+/g, ' ')
-    .trim()
 }
 
 const buildFooter = reportModelStructure => {
@@ -424,7 +403,6 @@ module.exports = {
   getIssueRow,
   gatherRemediationAdvice,
   buildFormattedHeaderNum,
-  getNumOfAndSeverityType,
   getIssueCveMsgList,
   getSeverityCounts,
   printNoVulnFoundMsg,

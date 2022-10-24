@@ -8,6 +8,7 @@ type ContrastConfOptions = Partial<{
   orgId: string
   authHeader: string
   numOfRuns: number
+  javaAgreement: boolean
 }>
 
 type ContrastConf = Conf<ContrastConfOptions>

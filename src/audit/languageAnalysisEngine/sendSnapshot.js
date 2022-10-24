@@ -29,11 +29,7 @@ const getTimeout = config => {
   }
 }
 
-const pollForSnapshotCompletition = async (
-  config,
-  snapshotId,
-  reportSpinner
-) => {
+const pollForSnapshotCompletion = async (config, snapshotId, reportSpinner) => {
   const client = commonApi.getHttpClient(config)
   const startTime = performance.now()
   const timeout = getTimeout(config)
@@ -76,5 +72,5 @@ const pollForSnapshotCompletition = async (
 }
 
 module.exports = {
-  pollForSnapshotCompletition: pollForSnapshotCompletition
+  pollForSnapshotCompletion
 }

@@ -8,7 +8,7 @@ const {
   SBOM_SPDX_FILE
 } = require('../constants/constants')
 
-async function auditSave(config) {
+async function auditSave(config, reportId) {
   let fileFormat
   switch (config.save) {
     case null:
@@ -23,11 +23,19 @@ async function auditSave(config) {
   }
 
   if (fileFormat) {
-    save.saveFile(
-      config,
-      fileFormat,
-      await sbom.generateSbom(config, fileFormat)
-    )
+    if (config.experimental) {
+      save.saveFile(
+        config,
+        fileFormat,
+        await sbom.generateSCASbom(config, fileFormat, reportId)
+      )
+    } else {
+      save.saveFile(
+        config,
+        fileFormat,
+        await sbom.generateSbom(config, fileFormat)
+      )
+    }
     const filename = `${config.applicationId}-sbom-${fileFormat}.json`
     if (fs.existsSync(filename)) {
       console.log(i18n.__('auditSBOMSaveSuccess') + ` - ${filename}`)

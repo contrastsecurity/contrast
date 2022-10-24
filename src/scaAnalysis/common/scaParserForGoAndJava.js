@@ -12,7 +12,7 @@ const parseDependenciesForSCAServices = dependencyTreeObject => {
         group: unParsedDependencyTree[dependency].group,
         version: unParsedDependencyTree[dependency].version,
         directDependency: unParsedDependencyTree[dependency].type === 'direct',
-        isProduction: true,
+        productionDependency: true,
         dependencies: subDeps
       }
       parsedDependencyTree[dependency] = parsedDependency

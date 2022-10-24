@@ -8,7 +8,8 @@ const saveScanFile = async (config, scanResults) => {
     const scanId = scanResults.scanDetail.id
     const client = commonApi.getHttpClient(config)
     const rawResults = await client.getSpecificScanResultSarif(config, scanId)
-    await saveResults.writeResultsToFile(rawResults?.body)
+    const name = await saveResults.writeResultsToFile(rawResults?.body)
+    console.log(`Scan Results saved to ${name}`)
   } else {
     console.log(i18n.__('scanNoFiletypeSpecifiedForSave'))
   }

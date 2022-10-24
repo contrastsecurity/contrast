@@ -21,4 +21,12 @@ const getAuth = params => {
   }
 }
 
-module.exports = { getAuth: getAuth }
+const getAgreement = () => {
+  return configStoreParams.getAgreement()
+}
+
+const setAgreement = answer => {
+  return configStoreParams.setAgreement(answer)
+}
+
+module.exports = { getAuth, getAgreement, setAgreement }

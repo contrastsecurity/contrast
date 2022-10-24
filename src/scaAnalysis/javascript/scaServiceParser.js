@@ -38,7 +38,10 @@ const npmCreateDepTree = (
       name: key,
       version: getResolvedVersion(key, packageLock),
       group: null,
-      isProduction: checkIfInPackageJSON(rawNode.packageJSON.dependencies, key),
+      productionDependency: checkIfInPackageJSON(
+        rawNode.packageJSON.dependencies,
+        key
+      ),
       directDependency: checkIfInPackageJSON(combinedPackageJSONDep, key),
       dependencies: createNPMChildDependencies(packageLock, key)
     }
@@ -59,7 +62,10 @@ const yarnCreateDepTree = (
       name: gav,
       version: getResolvedVersion(key, packageLock),
       group: null,
-      isProduction: checkIfInPackageJSON(rawNode.packageJSON.dependencies, nag),
+      productionDependency: checkIfInPackageJSON(
+        rawNode.packageJSON.dependencies,
+        nag
+      ),
       directDependency: checkIfInPackageJSON(combinedPackageJSONDep, nag),
       dependencies: createChildDependencies(packageLock, key)
     }

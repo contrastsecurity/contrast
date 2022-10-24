@@ -1,7 +1,17 @@
 const i18n = require('i18n')
 const fileFinder = require('./fileUtils')
-const rootFile = require('../audit/languageAnalysisEngine/getProjectRootFilenames')
-const path = require('path')
+
+const autoDetectFingerprintInfo = async filePath => {
+  let complexObj = await fileFinder.findAllFiles(filePath)
+  let result = []
+  let count = 0
+  complexObj.forEach(i => {
+    count++
+    result.push({ filePath: i, id: count.toString() })
+  })
+
+  return result
+}
 
 const autoDetectFileAndLanguage = async configToUse => {
   const entries = await fileFinder.findFile()
@@ -88,5 +98,6 @@ module.exports = {
   autoDetectFileAndLanguage,
   errorOnFileDetection,
   autoDetectAuditFilesAndLanguages,
-  errorOnAuditFileDetection
+  errorOnAuditFileDetection,
+  autoDetectFingerprintInfo
 }
