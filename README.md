@@ -9,8 +9,8 @@ CodeSec delivers:
 
 ## Install
 
-```
-npm install -g @contrast/contrast
+```shell
+npm install --location=global @contrast/contrast
 ```
 
 ## Authenticate
@@ -23,7 +23,8 @@ In the resulting browser window, log in and authenticate with your GitHub or Goo
 
 ### SAST scan
 
-####Requirements
+#### Scan Requirements
+
 Make sure you have the correct file types to scan.
 
 - Upload a .jar or .war file to scan a Java project for analysis
@@ -36,7 +37,7 @@ Use the Contrast scan command `contrast scan`
 
 ### Lambda function scan
 
-####Requirements
+#### Lambda Requirements
 
 - Currently supports Java and Python functions on AWS.
   Configure AWS credentials on your local environment by running the commands with your credentials:
@@ -51,7 +52,7 @@ export AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
 
 - These permissions are required to gather all required information on an AWS Lambda to use the `contrast lambda` command:
 
-  - Lambda: [GetFunction](https://docs.aws.amazon.com/lambda/latest/dg/API_GetFunction.html) | [GetLayerVersion](https://docs.aws.amazon.com/lambda/latest/dg/API_GetLayerVersion.html)
+  - Lambda: [GetFunction](https://docs.aws.amazon.com/lambda/latest/dg/API_GetFunction.html) | [GetLayerVersion](https://docs.aws.amazon.com/lambda/latest/dg/API_GetLayerVersion.html) | [ListFunctions](https://docs.aws.amazon.com/lambda/latest/dg/API_ListFunctions.html)
   - IAM: [GetRolePolicy](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetRolePolicy.html) | [GetPolicy](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicy.html) | [GetPolicyVersion](https://docs.aws.amazon.com/IAM/latest/APIReference/API_GetPolicyVersion.html) | [ListRolePolicies](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListRolePolicies.html) | [ListAttachedRolePolicies](https://docs.aws.amazon.com/IAM/latest/APIReference/API_ListAttachedRolePolicies.html)
 
 ### Start scanning
@@ -85,19 +86,24 @@ Performs a security SAST scan.
 
 **Options:**
 
-- **contrast scan --file** Path of the file you want to scan. Contrast searches for a .jar, .war .exe or .zip file in the working directory (and 3 folders deep) if a file is not specified.
-  Alias: **--f**
+- **contrast scan --file**
+
+  - Path of the file you want to scan. Contrast searches for a .jar, .war, .js. or .zip file in the working directory if a file is not specified.
+  - Alias: **--f**
 
 - **contrast scan --name**
-  Contrast project name. If not specified, Contrast creates a project from the name of the file
-  Alias: **–n**
+
+  - Contrast project name. If not specified, Contrast uses contrast.settings to identify the project or creates a project.
+  - Alias: **–n**
+
 - **contrast scan --save**
-  Download the results to a Static Analysis Results Interchange Format (SARIF) file.
-  Alias: **-s**
+
+  - Download the results to a Static Analysis Results Interchange Format (SARIF) file. The file is downloaded to the current working directory with a default name of results.sarif. You can view the file with any text editor.
+  - Alias: **-s**
 
 - **contrast scan --timeout**
-  Time in seconds to wait for the scan to complete. Default value is 300 seconds.
-  Alias: **-t**
+  - Time in seconds to wait for the scan to complete. Default value is 300 seconds.
+  - Alias: **-t**
 
 ### lambda
 
@@ -106,6 +112,9 @@ Name of AWS lambda function to scan.
 **Usage:** `contrast lambda --function-name`
 
 **Options:**
+
+- **contrast lambda --list-functions**
+  Lists all available lambda functions to scan.
 
 - **contrast lambda --function-name --endpoint-url**
   AWS Endpoint override. Similar to AWS CLI.
@@ -126,9 +135,6 @@ Name of AWS lambda function to scan.
 - **contrast lambda -–function-name -–verbose**
   Returns extended information to the terminal.
   Alias: **-v**
-
-- **contrast lambda -–function-name --list-functions**
-  Lists all available lambda functions to scan.
 
 - **contrast lambda --function-name -–help**
   Displays usage guide.

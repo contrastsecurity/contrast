@@ -341,12 +341,12 @@ const removeRedundantAndPopulateDefinedElements = deps => {
       delete element.platform
 
       element.group = null
-      element.isProduction = true
+      element.productionDependency = true
     }
 
     if (element.sourceType === 'GEM') {
       element.group = null
-      element.isProduction = true
+      element.productionDependency = true
 
       delete element.sourceType
       delete element.remote
@@ -355,7 +355,7 @@ const removeRedundantAndPopulateDefinedElements = deps => {
 
     if (element.sourceType === 'PATH') {
       element.group = null
-      element.isProduction = true
+      element.productionDependency = true
 
       delete element.platform
       delete element.sourceType
@@ -364,7 +364,7 @@ const removeRedundantAndPopulateDefinedElements = deps => {
 
     if (element.sourceType === 'BUNDLED WITH') {
       element.group = null
-      element.isProduction = true
+      element.productionDependency = true
 
       delete element.sourceType
       delete element.remote

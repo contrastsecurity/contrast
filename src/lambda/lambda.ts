@@ -17,7 +17,7 @@ import ora from '../utils/oraWrapper'
 import { postAnalytics } from './analytics'
 import { LambdaOptions, AnalyticsOption, StatusType, EventType } from './types'
 import { APP_VERSION } from '../constants/constants'
-import chalk from 'chalk'
+import { postRunMessage } from '../common/commonHelp'
 
 type ApiParams = {
   organizationId: string
@@ -116,7 +116,7 @@ const processLambda = async (argv: string[]) => {
       /* ignore */
     })
 
-    postRunMessage()
+    postRunMessage('lambda')
 
     if (errorMsg) {
       process.exit(1)
@@ -223,14 +223,6 @@ const validateRequiredLambdaParams = (options: LambdaOptions) => {
 const handleLambdaHelp = () => {
   printHelpMessage()
   process.exit(0)
-}
-
-const postRunMessage = () => {
-  console.log('\n' + chalk.underline.bold('Other Codesec Features:'))
-  console.log("'contrast scan' to run CodeSec’s industry leading SAST scanner")
-  console.log(
-    "'contrast audit' to find vulnerabilities in your open source dependencies\n"
-  )
 }
 
 export { processLambda, LambdaOptions, ApiParams, getAvailableFunctions }

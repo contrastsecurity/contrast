@@ -14,7 +14,7 @@ const HIGH = 'HIGH'
 const CRITICAL = 'CRITICAL'
 // App
 const APP_NAME = 'contrast'
-const APP_VERSION = '1.0.13'
+const APP_VERSION = '1.0.17'
 const TIMEOUT = 120000
 const HIGH_COLOUR = '#ff9900'
 const CRITICAL_COLOUR = '#e35858'
@@ -33,6 +33,12 @@ const SARIF_FILE = 'SARIF'
 const SBOM_CYCLONE_DX_FILE = 'cyclonedx'
 const SBOM_SPDX_FILE = 'spdx'
 const CE_URL = 'https://ce.contrastsecurity.com'
+
+//configuration
+const SAAS = 'SAAS'
+const EOP = 'EOP'
+const MODE_BUILD = 'BUILD'
+const MODE_REPO = 'REPO'
 
 module.exports = {
   supportedLanguages: { NODE, DOTNET, JAVA, RUBY, PYTHON, GO, PHP, JAVASCRIPT },
@@ -59,5 +65,9 @@ module.exports = {
   LOW_PRIORITY,
   NOTE_PRIORITY,
   SBOM_CYCLONE_DX_FILE,
-  SBOM_SPDX_FILE
+  SBOM_SPDX_FILE,
+  SAAS,
+  EOP,
+  MODE_BUILD,
+  MODE_REPO
 }

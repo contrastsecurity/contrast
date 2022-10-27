@@ -7,7 +7,7 @@ const parsePHPLockFileForScaServices = phpLockFile => {
   return merge(buildDepTree(packages, true), buildDepTree(packagesDev, false))
 }
 
-const buildDepTree = (packages, isProduction) => {
+const buildDepTree = (packages, productionDependency) => {
   //builds deps into flat structure
   const dependencyTree = {}
 
@@ -21,7 +21,7 @@ const buildDepTree = (packages, isProduction) => {
       name: name,
       version: currentObj.version,
       directDependency: true,
-      isProduction: isProduction,
+      productionDependency: productionDependency,
       dependencies: []
     }
 
@@ -53,7 +53,7 @@ const buildSubDepsIntoFlatStructure = childDeps => {
       name: name,
       version: version,
       directDependency: false,
-      isProduction: false,
+      productionDependency: false,
       dependencies: []
     }
   }

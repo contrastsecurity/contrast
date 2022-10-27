@@ -1,6 +1,6 @@
 const commandLineUsage = require('command-line-usage')
 const i18n = require('i18n')
-const constants = require('../constants')
+const constants = require('../cliConstants')
 const { commonHelpLinks } = require('../common/commonHelp')
 
 const scanUsageGuide = commandLineUsage([
@@ -36,7 +36,8 @@ const scanUsageGuide = commandLineUsage([
       'application-name'
     ]
   },
-  commonHelpLinks()
+  commonHelpLinks()[0],
+  commonHelpLinks()[1]
 ])
 
 module.exports = {

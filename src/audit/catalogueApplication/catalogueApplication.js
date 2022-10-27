@@ -45,7 +45,7 @@ const tryRetrieveAppIdFromMessages = messages => {
 }
 
 module.exports = {
-  catalogueApplication: catalogueApplication,
+  catalogueApplication,
   doesMessagesContainAppId,
   tryRetrieveAppIdFromMessages
 }

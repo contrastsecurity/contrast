@@ -5,7 +5,10 @@ const {
   forbiddenError,
   proxyError,
   genericError,
-  maxAppError
+  maxAppError,
+  snapshotFailureError,
+  vulnerabilitiesFailureError,
+  reportFailureError
 } = require('../common/errorHandling')
 
 const handleResponseErrors = (res, api) => {
@@ -20,6 +23,16 @@ const handleResponseErrors = (res, api) => {
   } else if (res.statusCode === 412) {
     maxAppError()
   } else {
+    if (api === 'snapshot' || api === 'catalogue') {
+      snapshotFailureError()
+    }
+    if (api === 'vulnerabilities') {
+      vulnerabilitiesFailureError()
+    }
+    if (api === 'report') {
+      reportFailureError()
+    }
+    console.log(res.statusCode)
     genericError(res)
   }
 }

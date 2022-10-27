@@ -14,6 +14,10 @@ const scaTreeUpload = async (analysis, config) => {
     }
   }
 
+  if (config.branch) {
+    requestBody.branchName = config.branch
+  }
+
   const client = commonApi.getHttpClient(config)
   const reportID = await client
     .scaServiceIngest(requestBody, config)
@@ -27,28 +31,32 @@ const scaTreeUpload = async (analysis, config) => {
     .catch(err => {
       throw err
     })
-  console.log(' polling report')
+  if (config.debug) {
+    console.log(' polling report', reportID)
+  }
 
   let keepChecking = true
   let res
   while (keepChecking) {
     res = await client.scaServiceReportStatus(config, reportID).then(res => {
-      console.log(res.statusCode)
-      console.log(res.body)
-      if (res.body.status == 'COMPLETED') {
+      if (config.debug) {
+        console.log(res.statusCode)
+        console.log(res.body)
+      }
+      if (res.body.status === 'COMPLETED') {
         keepChecking = false
         return client.scaServiceReport(config, reportID).then(res => {
-          return res.body
+          return [res.body, reportID]
         })
       }
     })
 
     if (!keepChecking) {
-      return res
+      return [res, reportID]
     }
     await requestUtils.sleep(5000)
   }
-  return res
+  return [res, reportID]
 }
 
 module.exports = {

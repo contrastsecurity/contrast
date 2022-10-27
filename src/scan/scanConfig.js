@@ -1,5 +1,5 @@
 const paramHandler = require('../utils/paramsUtil/paramHandler')
-const constants = require('../constants.js')
+const constants = require('../cliConstants.js')
 const path = require('path')
 const { supportedLanguagesScan } = require('../constants/constants')
 const i18n = require('i18n')

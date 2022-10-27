@@ -11,6 +11,33 @@ const findFile = async () => {
   })
 }
 
+const findAllFiles = async filePath => {
+  const result = await fg(
+    [
+      '**/pom.xml',
+      '**/build.gradle',
+      '**/build.gradle.kts',
+      '**/package.json',
+      '**/Pipfile',
+      '**/*.csproj',
+      '**/Gemfile',
+      '**/go.mod'
+    ],
+    {
+      dot: false,
+      deep: 2,
+      onlyFiles: true,
+      absolute: true,
+      cwd: filePath ? filePath : process.cwd()
+    }
+  )
+
+  if (result.length > 0) {
+    return result
+  }
+  return []
+}
+
 const findFilesJava = async (languagesFound, filePath) => {
   const result = await fg(
     ['**/pom.xml', '**/build.gradle', '**/build.gradle.kts'],
@@ -159,5 +186,6 @@ module.exports = {
   findFilesPhp,
   findFilesRuby,
   findFilesDotNet,
-  fileIsEmpty
+  fileIsEmpty,
+  findAllFiles
 }

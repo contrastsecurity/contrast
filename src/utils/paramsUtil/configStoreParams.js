@@ -16,4 +16,17 @@ const getAuth = () => {
   return ContrastConfToUse
 }
 
-module.exports = { getAuth: getAuth }
+const getAgreement = () => {
+  const ContrastConf = config.localConfig(APP_NAME, APP_VERSION)
+  let ContrastConfToUse = {}
+  ContrastConfToUse.javaAgreement = ContrastConf.get('javaAgreement')
+  return ContrastConfToUse
+}
+
+const setAgreement = agreement => {
+  const ContrastConf = config.localConfig(APP_NAME, APP_VERSION)
+  ContrastConf.set('javaAgreement', agreement)
+  return agreement
+}
+
+module.exports = { getAuth, getAgreement, setAgreement }

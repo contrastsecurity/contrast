@@ -11,6 +11,7 @@ const { assignBySeverity } = require('../../scan/formatScanOutput')
 const chalk = require('chalk')
 const { CE_URL } = require('../../constants/constants')
 const common = require('../../common/fail')
+const i18n = require('i18n')
 
 const processAuditReport = (config, results) => {
   let severityCounts = {}
@@ -92,11 +93,9 @@ const formatScaServicesReport = (config, results) => {
     printVulnInfo(projectOverviewCount)
 
     if (config.host !== CE_URL) {
+      console.log('\n' + chalk.bold(i18n.__('auditServicesMessageForTS')))
       console.log(
-        '\n' + chalk.bold('View your full dependency tree in Contrast:')
-      )
-      console.log(
-        `${config.host}/Contrast/static/ng/index.html#/${config.organizationId}/applications/${config.applicationId}/libs/dependency-tree`
+        `${config.host}/Contrast/static/ng/index.html#/${config.organizationId}/applications/${config.applicationId}/libs`
       )
     }
     return projectOverviewCount
