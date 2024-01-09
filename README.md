@@ -89,7 +89,7 @@ Performs a security SAST scan.
 - **contrast scan --file**
 
   - Path of the file you want to scan. Contrast searches for a .jar, .war, .js. or .zip file in the working directory if a file is not specified.
-  - Alias: **--f**
+  - Alias: **-f**
 
 - **contrast scan --name**
 
